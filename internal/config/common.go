@@ -7,6 +7,9 @@ import (
 	commonVaultTokenClient "github.com/crypto-bundle/bc-wallet-common-lib-vault/pkg/vault/client/token"
 )
 
+const ApplicationManagerNameTpl = "bc-wallet-%s-hdwallet-controller"
+const ProcessingNetworkEnvName = "PROCESSING_NETWORK"
+
 type baseConfigService interface {
 	GetHostName() string
 	GetEnvironmentName() string

@@ -5,7 +5,7 @@ import (
 	"crypto/sha256"
 	"fmt"
 
-	"github.com/crypto-bundle/bc-wallet-tron-hdwallet/internal/app"
+	"github.com/crypto-bundle/bc-wallet-common-hdwallet-api/internal/app"
 
 	pbApi "github.com/crypto-bundle/bc-wallet-common-hdwallet-controller/pkg/grpc/hdwallet"
 	tracer "github.com/crypto-bundle/bc-wallet-common-lib-tracer/pkg/tracer/opentracing"
@@ -31,11 +31,9 @@ func (h *generateMnemonicHandler) Handle(ctx context.Context,
 	req *pbApi.GenerateMnemonicRequest,
 ) (*pbApi.GenerateMnemonicResponse, error) {
 	var err error
-	tCtx, span, finish := tracer.Trace(ctx)
+	tCtx, _, finish := tracer.Trace(ctx)
 
 	defer func() { finish(err) }()
-
-	span.SetTag(app.BlockChainNameTag, app.BlockChainName)
 
 	vf := &GenerateMnemonicForm{}
 	valid, err := vf.LoadAndValidate(tCtx, req)

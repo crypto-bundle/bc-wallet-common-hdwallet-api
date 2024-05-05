@@ -4,7 +4,6 @@ const (
 	ApplicationNameTag = "application"
 	BlockChainNameTag  = "blockchain_name"
 
-	WalletTitleTag        = "title"
 	WalletUUIDTag         = "wallet_uuid"
 	MnemonicWalletUUIDTag = "mnemonic_wallet_uuid"
 	MnemonicWalletHashTag = "mnemonic_wallet_hash"

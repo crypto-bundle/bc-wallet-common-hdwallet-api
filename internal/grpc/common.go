@@ -2,13 +2,13 @@ package grpc
 
 import (
 	"context"
-	pbCommon "github.com/crypto-bundle/bc-wallet-common-hdwallet-controller/pkg/grpc/common"
-	"github.com/crypto-bundle/bc-wallet-tron-hdwallet/internal/hdwallet"
-	"github.com/google/uuid"
-	"google.golang.org/protobuf/types/known/anypb"
 	"time"
 
+	pbCommon "github.com/crypto-bundle/bc-wallet-common-hdwallet-controller/pkg/grpc/common"
 	pbApi "github.com/crypto-bundle/bc-wallet-common-hdwallet-controller/pkg/grpc/hdwallet"
+
+	"github.com/google/uuid"
+	"google.golang.org/protobuf/types/known/anypb"
 )
 
 const (
@@ -29,15 +29,6 @@ type configService interface {
 type encryptService interface {
 	Encrypt(msg []byte) ([]byte, error)
 	Decrypt(encMsg []byte) ([]byte, error)
-}
-
-type hdWalleter interface {
-	PublicHex() string
-	PublicHash() ([]byte, error)
-
-	NewTronWallet(account, change, address uint32) (*hdwallet.Tron, error)
-
-	ClearSecrets()
 }
 
 type walletPoolService interface {

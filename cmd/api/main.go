@@ -2,16 +2,16 @@ package main
 
 import (
 	"context"
-	"github.com/crypto-bundle/bc-wallet-tron-hdwallet/internal/plugin"
+	"github.com/crypto-bundle/bc-wallet-common-hdwallet-api/internal/plugin"
 	"log"
 	"os"
 	"os/signal"
 	"syscall"
 
-	"github.com/crypto-bundle/bc-wallet-tron-hdwallet/internal/app"
-	"github.com/crypto-bundle/bc-wallet-tron-hdwallet/internal/config"
-	"github.com/crypto-bundle/bc-wallet-tron-hdwallet/internal/grpc"
-	"github.com/crypto-bundle/bc-wallet-tron-hdwallet/internal/wallet_manager"
+	"github.com/crypto-bundle/bc-wallet-common-hdwallet-api/internal/app"
+	"github.com/crypto-bundle/bc-wallet-common-hdwallet-api/internal/config"
+	"github.com/crypto-bundle/bc-wallet-common-hdwallet-api/internal/grpc"
+	"github.com/crypto-bundle/bc-wallet-common-hdwallet-api/internal/wallet_manager"
 
 	commonLogger "github.com/crypto-bundle/bc-wallet-common-lib-logger/pkg/logger"
 	commonVault "github.com/crypto-bundle/bc-wallet-common-lib-vault/pkg/vault"
@@ -54,7 +54,7 @@ func main() {
 
 	appCfg, vaultSvc, err := config.Prepare(ctx, ReleaseTag,
 		CommitID, ShortCommitID,
-		BuildNumber, BuildDateTS, app.ApplicationHdWalletName)
+		BuildNumber, BuildDateTS)
 	if err != nil {
 		log.Fatal(err.Error(), err)
 	}
@@ -112,7 +112,6 @@ func main() {
 	if err != nil {
 		loggerEntry.Fatal("unable to start grpc", zap.Error(err),
 			zap.String(app.GRPCBindPathTag, appCfg.GetConnectionPath()))
-
 	}
 
 	loggerEntry.Info("application started successfully",

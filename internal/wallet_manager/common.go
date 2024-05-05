@@ -2,7 +2,9 @@ package wallet_manager
 
 import (
 	"context"
+
 	pbCommon "github.com/crypto-bundle/bc-wallet-common-hdwallet-controller/pkg/grpc/common"
+
 	"google.golang.org/protobuf/types/known/anypb"
 )
 
