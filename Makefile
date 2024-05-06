@@ -23,8 +23,9 @@ build_container:
 		--build-arg BUILD_NUMBER=$(build_number) \
 		--build-arg BUILD_DATE_TS=$(build_date) \
 		--tag $(container_registry):latest \
-		--tag $(container_registry):$(build_tag) .
+		--tag $(container_registry):$(release_tag) .
 
-	docker push $(container_registry):$(build_tag)
+	docker push $(container_registry):latest
+	docker push $(container_registry):$(release_tag)
 
 .PHONY: build_container
