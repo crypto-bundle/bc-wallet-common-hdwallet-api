@@ -142,3 +142,13 @@ Start of big application refactoring
     * GetPluginShortCommitID
     * GetPluginBuildNumber
     * GetPluginBuildDateTS
+
+## [v0.0.27] 05.05.2024
+### Changed
+* HdWallet api application move to another repository - https://github.com/crypto-bundle/bc-wallet-common-hdwallet-api
+* Changed go-name space
+* Changed docker container name
+* Removed Tron plugin extension, now repository [bc-wallet-tron-hdwallet](https://github.com/crypto-bundle/bc-wallet-tron-hdwallet) is repository with implementation Tron blockhain cryptographic processes 
+* New content of README.md file
+* Bump version of bc-wallet-common-lib-vault v0.0.14
+* Changed README.md content

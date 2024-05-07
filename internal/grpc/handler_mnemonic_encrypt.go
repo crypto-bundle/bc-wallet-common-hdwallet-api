@@ -5,13 +5,9 @@ import (
 	"crypto/sha256"
 	"fmt"
 
-	"github.com/crypto-bundle/bc-wallet-tron-hdwallet/internal/app"
-	"github.com/crypto-bundle/bc-wallet-tron-hdwallet/internal/hdwallet"
-
 	pbApi "github.com/crypto-bundle/bc-wallet-common-hdwallet-controller/pkg/grpc/hdwallet"
 	tracer "github.com/crypto-bundle/bc-wallet-common-lib-tracer/pkg/tracer/opentracing"
 
-	"github.com/btcsuite/btcd/chaincfg"
 	"go.uber.org/zap"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
@@ -26,6 +22,8 @@ type encryptMnemonicHandler struct {
 
 	transitEncryptorSvc encryptService
 	appEncryptorSvc     encryptService
+
+	mnemonicValidatorFunc validateMnemonicFunc
 }
 
 // nolint:funlen // fixme
@@ -33,11 +31,9 @@ func (h *encryptMnemonicHandler) Handle(ctx context.Context,
 	req *pbApi.EncryptMnemonicRequest,
 ) (*pbApi.EncryptMnemonicResponse, error) {
 	var err error
-	tCtx, span, finish := tracer.Trace(ctx)
+	tCtx, _, finish := tracer.Trace(ctx)
 
 	defer func() { finish(err) }()
-
-	span.SetTag(app.BlockChainNameTag, app.BlockChainName)
 
 	vf := &EncryptMnemonicForm{}
 	valid, err := vf.LoadAndValidate(tCtx, req)
@@ -61,15 +57,10 @@ func (h *encryptMnemonicHandler) Handle(ctx context.Context,
 		}
 	}()
 
-	blockChainParams := chaincfg.MainNetParams
-	wallet, err := hdwallet.NewFromString(string(decryptedData), &blockChainParams)
-	if err != nil {
-		return nil, err
+	isValidMnemoPhrase := h.mnemonicValidatorFunc(string(decryptedData))
+	if !isValidMnemoPhrase {
+		return nil, status.Error(codes.InvalidArgument, "mnemonic phrase is not valid")
 	}
-	defer func() {
-		wallet.ClearSecrets()
-		wallet = nil
-	}()
 
 	encryptedMnemonicData, err := h.appEncryptorSvc.Encrypt(decryptedData)
 	if err != nil {

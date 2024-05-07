@@ -3,7 +3,6 @@ package grpc
 import (
 	"context"
 	pbApi "github.com/crypto-bundle/bc-wallet-common-hdwallet-controller/pkg/grpc/hdwallet"
-	"github.com/crypto-bundle/bc-wallet-tron-hdwallet/internal/app"
 	"go.uber.org/zap"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
@@ -97,8 +96,7 @@ func NewHandlers(loggerSrv *zap.Logger,
 	walletPoolSvc walletPoolService,
 ) pbApi.HdWalletApiServer {
 
-	l := loggerSrv.Named("grpc.server.handler").With(
-		zap.String(app.BlockChainNameTag, app.BlockChainName))
+	l := loggerSrv.Named("grpc.server.handler")
 
 	return &grpcServerHandle{
 		UnimplementedHdWalletApiServer: &pbApi.UnimplementedHdWalletApiServer{},

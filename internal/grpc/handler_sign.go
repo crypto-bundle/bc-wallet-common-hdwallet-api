@@ -3,7 +3,7 @@ package grpc
 import (
 	"context"
 
-	"github.com/crypto-bundle/bc-wallet-tron-hdwallet/internal/app"
+	"github.com/crypto-bundle/bc-wallet-common-hdwallet-api/internal/app"
 
 	pbApi "github.com/crypto-bundle/bc-wallet-common-hdwallet-controller/pkg/grpc/hdwallet"
 	tracer "github.com/crypto-bundle/bc-wallet-common-lib-tracer/pkg/tracer/opentracing"
@@ -28,11 +28,9 @@ func (h *signDataHandler) Handle(ctx context.Context,
 	req *pbApi.SignDataRequest,
 ) (*pbApi.SignDataResponse, error) {
 	var err error
-	tCtx, span, finish := tracer.Trace(ctx)
+	tCtx, _, finish := tracer.Trace(ctx)
 
 	defer func() { finish(err) }()
-
-	span.SetTag(app.BlockChainNameTag, app.BlockChainName)
 
 	vf := &SignDataForm{}
 	valid, err := vf.LoadAndValidate(ctx, req)

@@ -1,8 +1,8 @@
 package config
 
 type ProcessionEnvironmentConfig struct {
-	ProcessingProvider string `envconfig:"PROCESSING_PROVIDER" default:"cryptobundle"`
-	ProcessingNetwork  string `envconfig:"PROCESSING_NETWORK" default:"tron"`
+	ProcessingProvider string `envconfig:"PROCESSING_PROVIDER"`
+	ProcessingNetwork  string `envconfig:"PROCESSING_NETWORK"`
 
 	baseAppCfgSrv baseConfigService
 }

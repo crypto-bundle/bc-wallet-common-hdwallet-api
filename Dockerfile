@@ -8,7 +8,7 @@ ENV GOPRIVATE $GOPRIVATE,github.com/crypto-bundle
 # add private github token
 RUN apk add --no-cache git openssh build-base && \
     mkdir -p -m 0700 ~/.ssh && \
-    ssh-keyscan gitlab.heronodes.io >> ~/.ssh/known_hosts && \
+    ssh-keyscan github.com >> ~/.ssh/known_hosts && \
     git config --global url."git@github.com".insteadOf "https://github.com/"
 
 WORKDIR /src
@@ -29,7 +29,9 @@ ARG BUILD_DATE_TS="1713280105"
 RUN --mount=type=cache,target=/go/pkg/mod \
     --mount=type=cache,target=/root/.cache/go-build \
     mkdir -p /src/bin && \
-    GOOS=linux CGO_ENABLED=${CGO} go build ${RACE} -v -installsuffix cgo -o ./bin/api \
+    GOOS=linux CGO_ENABLED=${CGO} go build ${RACE} -trimpath -race -installsuffix cgo \
+          -gcflags all=-N \
+          -o ./bin/api \
           -ldflags "-linkmode external -extldflags -static -s -w \
                     -X 'main.BuildDateTS=${BUILD_DATE_TS}' \
           			-X 'main.BuildNumber=${BUILD_NUMBER}' \

@@ -2,14 +2,15 @@ package wallet_manager
 
 import (
 	"context"
-	pbCommon "github.com/crypto-bundle/bc-wallet-common-hdwallet-controller/pkg/grpc/common"
-	"google.golang.org/protobuf/types/known/anypb"
 	"sync"
 	"time"
 
-	"github.com/crypto-bundle/bc-wallet-tron-hdwallet/internal/app"
+	pbCommon "github.com/crypto-bundle/bc-wallet-common-hdwallet-controller/pkg/grpc/common"
+
+	"github.com/crypto-bundle/bc-wallet-common-hdwallet-api/internal/app"
 	"github.com/google/uuid"
 	"go.uber.org/zap"
+	"google.golang.org/protobuf/types/known/anypb"
 )
 
 type unitWrapper struct {

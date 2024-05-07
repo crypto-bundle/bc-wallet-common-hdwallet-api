@@ -2,9 +2,11 @@ package config
 
 import (
 	"context"
+	"fmt"
 	commonConfig "github.com/crypto-bundle/bc-wallet-common-lib-config/pkg/config"
 	commonVault "github.com/crypto-bundle/bc-wallet-common-lib-vault/pkg/vault"
 	commonVaultTokenClient "github.com/crypto-bundle/bc-wallet-common-lib-vault/pkg/vault/client/token"
+	"os"
 )
 
 func PrepareVault(ctx context.Context, baseCfgSrv baseConfigService) (*commonVault.Service, error) {
@@ -41,12 +43,13 @@ func Prepare(ctx context.Context,
 	commitID,
 	shortCommitID,
 	buildNumber,
-	buildDateTS,
-	applicationName string,
+	buildDateTS string,
 ) (*HdWalletConfig, *commonVault.Service, error) {
+	appName := fmt.Sprintf(ApplicationManagerNameTpl, os.Getenv(ProcessingNetworkEnvName))
+
 	baseCfgSrv, err := PrepareBaseConfig(ctx, releaseTag,
 		commitID, shortCommitID,
-		buildNumber, buildDateTS, applicationName)
+		buildNumber, buildDateTS, appName)
 	if err != nil {
 		return nil, nil, err
 	}
