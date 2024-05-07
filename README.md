@@ -2,19 +2,24 @@
 
 ## Description
 
-Application for control access to mnemonic derivation wallets. Application support flow for:
-* Create and manage mnemonic wallets
-* Open and manager wallet sessions
-* Prepare and close signature request
+Application for manage wallet sessions and execute wallet request, like: 
+ - Get account address
+ - Generate new mnemonic wallet
+ - Validate mnemonic seed phrase
+ - Sign data by private key by internal mnemonic account
+
+This application is an environment for checking requests and transferring them for processing to the plugin, 
+which makes cryptographic work for a specific blockchain.
 
 HdWallet-api application is a second part of hdwallet applications bundle.
-Another part of bundle - target blockchain plugin.
+Another third part of bundle - target blockchain plugin.
 
 ## Api
-Service has two types of API:
-* gRPC-API
-    * API documentation [here](docs/api/controller_proto.md)
-    * Protobuf descriptions [/pkg/proto/controller_api](/pkg/proto/controller_api)
+
+### gRPC-API
+* API documentation [bc-wallet-common-hdwallet-controller/docs/api/hdwallet_proto.md](https://github.com/crypto-bundle/bc-wallet-common-hdwallet-controller/blob/develop/docs/api/hdwallet_proto.md)
+* Golang proto generated code [bc-wallet-common-hdwallet-controller/pkg/grpc/hdwallet](https://github.com/crypto-bundle/bc-wallet-common-hdwallet-controller/tree/develop/pkg/grpc/hdwallet)
+* Protobuf descriptions [bc-wallet-common-hdwallet-controller/pkg/proto/hdwallet_api](https://github.com/crypto-bundle/bc-wallet-common-hdwallet-controller/tree/develop/pkg/proto/hdwallet_api)
 
 ## Infrastructure dependencies
 
@@ -28,6 +33,7 @@ Application required two encryption keys:
 * Target encryption key for hdwallet-controller and hdwallet-api - crypto-bundle-bc-wallet-tron-hdwallet
 
 ### HdWallet plugin
+
 Implementation of HdWallet plugin must contains next exported functions:
 * ```NewPoolUnitfunc(walletUUID string, mnemonicDecryptedData string) (interface{}, error)```
 * ```GenerateMnemonic func() (string, error)```
@@ -43,6 +49,7 @@ Function NewPoolUnit must return implementation for interface
 ```Go
 import (
     pbCommon "github.com/crypto-bundle/bc-wallet-common-hdwallet-controller/pkg/grpc/common"
+
     "google.golang.org/protobuf/types/known/anypb"
 )
 
