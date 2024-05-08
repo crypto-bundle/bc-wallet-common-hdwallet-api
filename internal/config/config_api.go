@@ -24,10 +24,13 @@ type HdWalletConfig struct {
 	// Internal configs
 	// -------------------
 	*MnemonicConfig
-	// VaultCommonTransitKey - common vault transit key for whole processing cluster
-	VaultCommonTransitKey string `envconfig:"VAULT_COMMON_TRANSIT_KEY" default:"-"`
-	// VaultApplicationEncryptionKey - vault encryption key for hd-wallet-controller and hd-wallet-api application
-	VaultApplicationEncryptionKey string `envconfig:"VAULT_APP_ENCRYPTION_KEY" default:"-"`
+	// VaultCommonTransitKey - common vault transit key for whole processing cluster,
+	// must be saved in common vault kv bucket, for example: crypto-bundle/bc-wallet-common/transit
+	VaultCommonTransitKey string `envconfig:"VAULT_COMMON_TRANSIT_KEY" secret:"true"`
+	// VaultApplicationEncryptionKey - vault encryption key for hd-wallet-controller and hd-wallet-api application,
+	// must be saved in bc-wallet-<blockchain_name>-hdwallet vault kv bucket,
+	// for example: crypto-bundle/bc-wallet-tron-hdwallet/common
+	VaultApplicationEncryptionKey string `envconfig:"VAULT_APP_ENCRYPTION_KEY" secret:"true"`
 	// ----------------------------
 	// Dependencies
 	baseAppCfgSrv baseConfigService
