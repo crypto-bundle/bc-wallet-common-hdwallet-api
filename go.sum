@@ -8,8 +8,8 @@ github.com/cenkalti/backoff/v3 v3.2.2/go.mod h1:cIeZDE3IrqwwJl6VUwCN6trj1oXrTS4r
 github.com/census-instrumentation/opencensus-proto v0.2.1/go.mod h1:f6KPmirojxKA12rnyqOA5BBL4O983OfeGPqjHWSTneU=
 github.com/client9/misspell v0.3.4/go.mod h1:qj6jICC3Q7zFZvVWo7KLAzC3yx5G7kyvSDkc90ppPyw=
 github.com/cncf/udpa/go v0.0.0-20191209042840-269d4d468f6f/go.mod h1:M8M6+tZqaGXZJjfX53e64911xZQV5JYwmTeXPW+k8Sc=
-github.com/crypto-bundle/bc-wallet-common-hdwallet-controller v0.0.25 h1:57jkUCGz7DQIakbAhUYKf/CKHIkNQ+04AnXK8dlKnwo=
-github.com/crypto-bundle/bc-wallet-common-hdwallet-controller v0.0.25/go.mod h1:SIZU2kXxbifmUelJy/S35KeWyLFXnVW2RYhsAoIU2Uo=
+github.com/crypto-bundle/bc-wallet-common-hdwallet-controller v0.0.26-wip-2 h1:wF85/7fpkQvkV1sIlA3AJ5CSA3eESD1xVr1FSlCP2+8=
+github.com/crypto-bundle/bc-wallet-common-hdwallet-controller v0.0.26-wip-2/go.mod h1:BhMvPDT5/JWwXeZKhV7ZVd6bdRxweAmta9vtUU+ly+s=
 github.com/crypto-bundle/bc-wallet-common-lib-config v0.0.5 h1:3iC2jNnt1FwT8imOgDSOEGOg5yNlTMRKydM64cL1xjA=
 github.com/crypto-bundle/bc-wallet-common-lib-config v0.0.5/go.mod h1:kQRtiYGapmcWwHrAxS3K1PTbiUspuin4q36iMdsXhHQ=
 github.com/crypto-bundle/bc-wallet-common-lib-grpc v0.0.4 h1:hnBz0D8iN9nEjmRFE5owJucx55LtP2yqhRTzvrrzM6M=

@@ -1,10 +1,10 @@
 module github.com/crypto-bundle/bc-wallet-common-hdwallet-api
 
-go 1.22
+go 1.22.2
 
 require (
 	github.com/asaskevich/govalidator v0.0.0-20230301143203-a9d515a09cc2
-	github.com/crypto-bundle/bc-wallet-common-hdwallet-controller v0.0.25
+	github.com/crypto-bundle/bc-wallet-common-hdwallet-controller v0.0.26-wip-2
 	github.com/crypto-bundle/bc-wallet-common-lib-config v0.0.5
 	github.com/crypto-bundle/bc-wallet-common-lib-grpc v0.0.4
 	github.com/crypto-bundle/bc-wallet-common-lib-healthcheck v0.0.4

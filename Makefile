@@ -16,6 +16,7 @@ build_container:
 
 	docker build \
 		--ssh default=$(SSH_AUTH_SOCK) \
+		--no-cache \
 		--platform $(platform) \
 		--build-arg RELEASE_TAG=$(release_tag) \
 		--build-arg COMMIT_ID=$(commit_id) \
@@ -23,9 +24,9 @@ build_container:
 		--build-arg BUILD_NUMBER=$(build_number) \
 		--build-arg BUILD_DATE_TS=$(build_date) \
 		--tag $(container_registry):latest \
-		--tag $(container_registry):$(release_tag) .
+		--tag $(container_registry):$(build_tag) .
 
 	docker push $(container_registry):latest
-	docker push $(container_registry):$(release_tag)
+	docker push $(container_registry):$(build_tag)
 
 .PHONY: build_container

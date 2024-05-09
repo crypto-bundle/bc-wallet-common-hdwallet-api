@@ -3,6 +3,7 @@ package grpc
 import (
 	"context"
 	"net"
+	"os"
 
 	pbApi "github.com/crypto-bundle/bc-wallet-common-hdwallet-controller/pkg/grpc/hdwallet"
 
@@ -43,13 +44,37 @@ func (s *Server) shutdown() error {
 
 	s.grpcServer.GracefulStop()
 
+	err := os.Remove(s.configSvc.GetConnectionPath())
+	if err != nil {
+		return err
+	}
+
 	s.logger.Info("grpc server shutdown completed")
 
 	return nil
 }
 
 func (s *Server) ListenAndServe(ctx context.Context) (err error) {
-	listenConn, err := net.Listen("unix", s.configSvc.GetConnectionPath())
+	tf, err := os.CreateTemp(s.configSvc.GetConnectionPath(), s.configSvc.GetUnixFileNameTemplate())
+	if err != nil {
+		return err
+	}
+
+	path := tf.Name()
+
+	// Close the file and remove it because it has to not exist for
+	// the domain socket.
+	err = tf.Close()
+	if err != nil {
+		return err
+	}
+
+	err = os.Remove(path)
+	if err != nil {
+		return err
+	}
+
+	listenConn, err := net.Listen("unix", path)
 	if err != nil {
 		s.logger.Error("unable to listen", zap.Error(err),
 			zap.String("path", s.configSvc.GetConnectionPath()))

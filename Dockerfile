@@ -1,12 +1,18 @@
-FROM golang:1.22-alpine AS gobuild
+FROM golang:1.22.2-bookworm AS gobuild
 
 ENV GO111MODULE on
 ENV GOSUMDB off
 # add go-base repo to exceptions as a private repository.
 ENV GOPRIVATE $GOPRIVATE,github.com/crypto-bundle
 
-# add private github token
-RUN apk add --no-cache git openssh build-base && \
+RUN set -eux; \
+	apt-get update; \
+	apt-get install -y --no-install-recommends \
+		git \
+        openssh-client \
+        build-essential \
+	; \
+	rm -rf /var/lib/apt/lists/* && \
     mkdir -p -m 0700 ~/.ssh && \
     ssh-keyscan github.com >> ~/.ssh/known_hosts && \
     git config --global url."git@github.com".insteadOf "https://github.com/"
@@ -29,10 +35,10 @@ ARG BUILD_DATE_TS="1713280105"
 RUN --mount=type=cache,target=/go/pkg/mod \
     --mount=type=cache,target=/root/.cache/go-build \
     mkdir -p /src/bin && \
-    GOOS=linux CGO_ENABLED=${CGO} go build ${RACE} -trimpath -race -installsuffix cgo \
+    GOOS=linux CGO_ENABLED=${CGO} go build ${RACE} \
           -gcflags all=-N \
           -o ./bin/api \
-          -ldflags "-linkmode external -extldflags -static -s -w \
+          -ldflags "-linkmode external -extldflags -w \
                     -X 'main.BuildDateTS=${BUILD_DATE_TS}' \
           			-X 'main.BuildNumber=${BUILD_NUMBER}' \
           			-X 'main.ReleaseTag=${RELEASE_TAG}' \
@@ -40,7 +46,7 @@ RUN --mount=type=cache,target=/go/pkg/mod \
           			-X 'main.ShortCommitID=${SHORT_COMMIT_ID}'" \
           ./cmd/api
 
-FROM scratch
+FROM busybox:glibc
 
 # Import the user and group files from the build stage.
 #COPY --from=gobuild /etc/group /etc/passwd /etc/
@@ -48,8 +54,7 @@ FROM scratch
 ENV APP_ROOT /opt/appworker
 ENV PATH /opt/appworker
 
-COPY --from=gobuild /src/bin $APP_ROOT
+COPY --from=gobuild /src/bin/api $APP_ROOT/api
 
 EXPOSE 8080
-USER appworker
 CMD ["/opt/appworker/api"]

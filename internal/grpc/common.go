@@ -24,6 +24,7 @@ type configService interface {
 	IsLocal() bool
 
 	GetConnectionPath() string
+	GetUnixFileNameTemplate() string
 }
 
 type encryptService interface {
