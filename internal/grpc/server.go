@@ -2,6 +2,8 @@ package grpc
 
 import (
 	"context"
+	"errors"
+	"google.golang.org/grpc/reflection"
 	"net"
 	"os"
 
@@ -12,7 +14,6 @@ import (
 	"go.opentelemetry.io/contrib/instrumentation/google.golang.org/grpc/otelgrpc"
 	"go.uber.org/zap"
 	"google.golang.org/grpc"
-	"google.golang.org/grpc/reflection"
 )
 
 type Server struct {
@@ -22,7 +23,8 @@ type Server struct {
 	handlers          pbApi.HdWalletApiServer
 	configSvc         configService
 
-	listener net.Listener
+	sockFilePath string
+	listener     net.Listener
 }
 
 func (s *Server) Init(_ context.Context) error {
@@ -44,7 +46,7 @@ func (s *Server) shutdown() error {
 
 	s.grpcServer.GracefulStop()
 
-	err := os.Remove(s.configSvc.GetConnectionPath())
+	err := os.Remove(s.sockFilePath)
 	if err != nil {
 		return err
 	}
@@ -81,6 +83,8 @@ func (s *Server) ListenAndServe(ctx context.Context) (err error) {
 
 		return err
 	}
+
+	s.sockFilePath = path
 	s.listener = listenConn
 
 	s.grpcServer = grpc.NewServer(s.grpcServerOptions...)
@@ -88,21 +92,38 @@ func (s *Server) ListenAndServe(ctx context.Context) (err error) {
 		reflection.Register(s.grpcServer)
 	}
 
+	go s.serve(ctx)
+
+	return nil
+}
+
+func (s *Server) serve(ctx context.Context) {
+	newCtx, causeFunc := context.WithCancelCause(ctx)
 	pbApi.RegisterHdWalletApiServer(s.grpcServer, s.handlers)
 
 	s.logger.Info("grpc serve success")
-
 	go func() {
-		err = s.grpcServer.Serve(s.listener)
+		err := s.grpcServer.Serve(s.listener)
 		if err != nil {
 			s.logger.Error("unable to start serving", zap.Error(err),
 				zap.String("path", s.configSvc.GetConnectionPath()))
+
+			causeFunc(err)
 		}
 	}()
 
-	<-ctx.Done()
+	<-newCtx.Done()
+	intErr := newCtx.Err()
+	if !errors.Is(intErr, context.Canceled) {
+		s.logger.Error("ctx cause errors", zap.Error(intErr))
+	}
 
-	return s.shutdown()
+	err := s.shutdown()
+	if err != nil {
+		s.logger.Error("unable to graceful shutdown", zap.Error(err))
+	}
+
+	return
 }
 
 // nolint:revive // fixme

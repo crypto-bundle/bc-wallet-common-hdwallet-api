@@ -16,7 +16,6 @@ build_container:
 
 	docker build \
 		--ssh default=$(SSH_AUTH_SOCK) \
-		--no-cache \
 		--platform $(platform) \
 		--build-arg RELEASE_TAG=$(release_tag) \
 		--build-arg COMMIT_ID=$(commit_id) \
