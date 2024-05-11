@@ -3,6 +3,8 @@ package main
 import (
 	"context"
 	"github.com/crypto-bundle/bc-wallet-common-hdwallet-api/internal/plugin"
+	commonHealthcheck "github.com/crypto-bundle/bc-wallet-common-lib-healthcheck/pkg/healthcheck"
+	commonProfiler "github.com/crypto-bundle/bc-wallet-common-lib-profiler/pkg/profiler"
 	"log"
 	"os"
 	"os/signal"
@@ -84,6 +86,9 @@ func main() {
 
 	walletsPoolSvc := wallet_manager.NewWalletPool(ctx, loggerEntry, appCfg,
 		pluginWrapper.GetMakeWalletCallback(), encryptorSvc)
+	walletsPoolSvc.Run()
+
+	profiler := commonProfiler.NewHTTPServer(loggerEntry, appCfg.ProfilerConfig)
 
 	apiHandlers := grpc.NewHandlers(loggerEntry,
 		pluginWrapper.GetMnemonicGeneratorFunc(),
@@ -101,8 +106,14 @@ func main() {
 			zap.String(app.GRPCBindPathTag, appCfg.GetConnectionPath()))
 	}
 
+	err = profiler.Init(ctx)
+	if err != nil {
+		loggerEntry.Fatal("unable to init profiler", zap.Error(err))
+	}
+	loggerEntry.Info("profiler successfully initiated")
+
 	// TODO: add healthcheck flow
-	//checker := commonHealthcheck.NewHTTPHealthChecker(loggerEntry, appCfg)
+	commonHealthcheck.NewHTTPHealthChecker(loggerEntry, appCfg)
 	//checker.AddStartupProbeUnit(vaultSvc)
 	//checker.AddStartupProbeUnit(redisConn)
 	//checker.AddStartupProbeUnit(pgConn)
@@ -112,6 +123,11 @@ func main() {
 	if err != nil {
 		loggerEntry.Fatal("unable to start grpc", zap.Error(err),
 			zap.String(app.GRPCBindPathTag, appCfg.GetConnectionPath()))
+	}
+
+	err = profiler.ListenAndServe(ctx)
+	if err != nil {
+		loggerEntry.Fatal("unable to init profiler", zap.Error(err))
 	}
 
 	loggerEntry.Info("application started successfully",

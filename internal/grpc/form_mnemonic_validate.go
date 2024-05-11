@@ -3,7 +3,6 @@ package grpc
 import (
 	"context"
 	"fmt"
-	"github.com/asaskevich/govalidator"
 	pbApi "github.com/crypto-bundle/bc-wallet-common-hdwallet-controller/pkg/grpc/hdwallet"
 	"github.com/google/uuid"
 )
@@ -28,11 +27,6 @@ func (f *ValidateMnemonicForm) LoadAndValidate(ctx context.Context,
 	}
 
 	f.EncryptedMnemonicData = req.MnemonicData
-
-	_, err = govalidator.ValidateStruct(f)
-	if err != nil {
-		return false, err
-	}
 
 	return true, nil
 }

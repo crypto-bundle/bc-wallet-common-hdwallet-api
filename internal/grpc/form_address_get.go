@@ -8,7 +8,6 @@ import (
 
 	pbApi "github.com/crypto-bundle/bc-wallet-common-hdwallet-controller/pkg/grpc/hdwallet"
 
-	"github.com/asaskevich/govalidator"
 	"github.com/google/uuid"
 )
 
@@ -64,11 +63,6 @@ func (f *AccountForm) validate(mnemoIdentifier *pbCommon.MnemonicWalletIdentity,
 	}
 
 	f.AccountParameters = accIdentifier.Parameters
-
-	_, err = govalidator.ValidateStruct(f)
-	if err != nil {
-		return false, err
-	}
 
 	return true, nil
 }

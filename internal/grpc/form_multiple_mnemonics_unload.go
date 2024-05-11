@@ -6,7 +6,6 @@ import (
 
 	pbApi "github.com/crypto-bundle/bc-wallet-common-hdwallet-controller/pkg/grpc/hdwallet"
 
-	"github.com/asaskevich/govalidator"
 	"github.com/google/uuid"
 )
 
@@ -30,11 +29,6 @@ func (f *UnLoadMultipleMnemonicForm) LoadAndValidate(ctx context.Context,
 	for i, _ := range req.WalletIdentifier {
 		walletIdentityForm := &UnLoadMnemonicForm{
 			WalletUUID: req.WalletIdentifier[i].WalletUUID,
-		}
-
-		_, err = govalidator.ValidateStruct(walletIdentityForm)
-		if err != nil {
-			return false, err
 		}
 
 		walletIdentityForm.WalletUUIDRaw, _ = uuid.Parse(walletIdentityForm.WalletUUID)

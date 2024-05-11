@@ -7,7 +7,6 @@ import (
 
 	pbApi "github.com/crypto-bundle/bc-wallet-common-hdwallet-controller/pkg/grpc/hdwallet"
 
-	"github.com/asaskevich/govalidator"
 	"github.com/google/uuid"
 )
 
@@ -41,11 +40,6 @@ func (f *SignDataForm) LoadAndValidate(ctx context.Context,
 
 	f.AccountParameters = req.AccountIdentifier.Parameters
 	f.DataForSign = req.DataForSign
-
-	_, err = govalidator.ValidateStruct(f)
-	if err != nil {
-		return false, err
-	}
 
 	return true, nil
 }

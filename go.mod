@@ -3,16 +3,14 @@ module github.com/crypto-bundle/bc-wallet-common-hdwallet-api
 go 1.22.2
 
 require (
-	github.com/asaskevich/govalidator v0.0.0-20230301143203-a9d515a09cc2
-	github.com/crypto-bundle/bc-wallet-common-hdwallet-controller v0.0.26-wip-2
+	github.com/crypto-bundle/bc-wallet-common-hdwallet-controller v0.0.26-wip-4
 	github.com/crypto-bundle/bc-wallet-common-lib-config v0.0.5
-	github.com/crypto-bundle/bc-wallet-common-lib-grpc v0.0.4
 	github.com/crypto-bundle/bc-wallet-common-lib-healthcheck v0.0.4
 	github.com/crypto-bundle/bc-wallet-common-lib-logger v0.0.4
+	github.com/crypto-bundle/bc-wallet-common-lib-profiler v0.0.2
 	github.com/crypto-bundle/bc-wallet-common-lib-tracer v0.0.4
 	github.com/crypto-bundle/bc-wallet-common-lib-vault v0.0.14
 	github.com/google/uuid v1.6.0
-	go.opentelemetry.io/contrib/instrumentation/google.golang.org/grpc/otelgrpc v0.51.0
 	go.uber.org/zap v1.27.0
 	google.golang.org/grpc v1.63.2
 	google.golang.org/protobuf v1.34.0
@@ -21,9 +19,6 @@ require (
 require (
 	github.com/cenkalti/backoff/v3 v3.2.2 // indirect
 	github.com/go-jose/go-jose/v4 v4.0.1 // indirect
-	github.com/go-logr/logr v1.4.1 // indirect
-	github.com/go-logr/stdr v1.2.2 // indirect
-	github.com/grpc-ecosystem/go-grpc-middleware v1.4.0 // indirect
 	github.com/hashicorp/errwrap v1.1.0 // indirect
 	github.com/hashicorp/go-cleanhttp v0.5.2 // indirect
 	github.com/hashicorp/go-multierror v1.1.1 // indirect
@@ -40,9 +35,7 @@ require (
 	github.com/mitchellh/go-homedir v1.1.0 // indirect
 	github.com/mitchellh/mapstructure v1.5.0 // indirect
 	github.com/ryanuber/go-glob v1.0.0 // indirect
-	go.opentelemetry.io/otel v1.26.0 // indirect
-	go.opentelemetry.io/otel/metric v1.26.0 // indirect
-	go.opentelemetry.io/otel/trace v1.26.0 // indirect
+	github.com/stretchr/testify v1.9.0 // indirect
 	go.uber.org/multierr v1.10.0 // indirect
 	golang.org/x/crypto v0.22.0 // indirect
 	golang.org/x/net v0.24.0 // indirect

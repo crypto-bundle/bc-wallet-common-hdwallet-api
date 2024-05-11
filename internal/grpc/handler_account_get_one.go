@@ -54,7 +54,7 @@ func (h *getDerivationAddressHandler) Handle(ctx context.Context,
 	}
 
 	if addr == nil {
-		return nil, status.Error(codes.ResourceExhausted, "wallet not loaded")
+		return nil, status.Error(codes.ResourceExhausted, "wallet not loaded or session already expired")
 	}
 
 	req.AccountIdentifier.Address = *addr

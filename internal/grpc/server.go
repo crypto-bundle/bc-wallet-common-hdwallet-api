@@ -9,9 +9,6 @@ import (
 
 	pbApi "github.com/crypto-bundle/bc-wallet-common-hdwallet-controller/pkg/grpc/hdwallet"
 
-	commonGRPCServer "github.com/crypto-bundle/bc-wallet-common-lib-grpc/pkg/server"
-
-	"go.opentelemetry.io/contrib/instrumentation/google.golang.org/grpc/otelgrpc"
 	"go.uber.org/zap"
 	"google.golang.org/grpc"
 )
@@ -28,15 +25,15 @@ type Server struct {
 }
 
 func (s *Server) Init(_ context.Context) error {
-	options := commonGRPCServer.DefaultServeOptions()
+	//options := commonGRPCServer.DefaultServeOptions()
 	msgSizeOptions := []grpc.ServerOption{
-		grpc.MaxRecvMsgSize(commonGRPCServer.DefaultServerMaxReceiveMessageSize),
-		grpc.MaxSendMsgSize(commonGRPCServer.DefaultServerMaxSendMessageSize),
+		grpc.MaxRecvMsgSize(1024 * 1024 * 3),
+		grpc.MaxSendMsgSize(1024 * 1024 * 3),
 	}
-	options = append(options, msgSizeOptions...)
-	options = append(options, grpc.StatsHandler(otelgrpc.NewServerHandler()))
+	//options = append(options, msgSizeOptions...)
+	//options = append(options, grpc.StatsHandler(otelgrpc.NewServerHandler()))
 
-	s.grpcServerOptions = options
+	s.grpcServerOptions = msgSizeOptions
 
 	return nil
 }
@@ -76,7 +73,12 @@ func (s *Server) ListenAndServe(ctx context.Context) (err error) {
 		return err
 	}
 
-	listenConn, err := net.Listen("unix", path)
+	resolved, err := net.ResolveUnixAddr("unix", path)
+	if err != nil {
+		return err
+	}
+
+	listenConn, err := net.ListenUnix("unix", resolved)
 	if err != nil {
 		s.logger.Error("unable to listen", zap.Error(err),
 			zap.String("path", s.configSvc.GetConnectionPath()))
