@@ -48,6 +48,8 @@ func (w *unitWrapper) Run() error {
 					zap.Time(app.TickerEventTriggerTimeTag, fired))
 			}
 
+			wrapped.cancelFunc()
+
 			break
 
 		case <-wrapped.ctx.Done():
