@@ -152,3 +152,20 @@ Start of big application refactoring
 * New content of README.md file
 * Bump version of bc-wallet-common-lib-vault v0.0.14
 * Changed README.md content
+
+## [v0.0.28] 12.05.2024
+### Added
+* Added usage of lib-profiler:
+  * Added lib-profiler config ENV to example.env file
+  * Added lib-profiler config to application config
+### Changed
+* Added support of new version bc-wallet-common-hdwallet-controller v0.0.27
+* Changed unix-socket listen flow:
+  * Implemented usage of new ENV
+  * Changed listen flow
+  * Fixed bugs in shutdown gRPC server process
+* Changed build of common-hdwallet-api docker container:
+  * golang:1.22.2-bookworm is stage 1 image
+  * busybox:glibc is stage 2 image
+* Small fixes to prevent "Race Condition" state
+* Changed validation flow - removed usage of govalidator
