@@ -5,6 +5,7 @@ import (
 	commonConfig "github.com/crypto-bundle/bc-wallet-common-lib-config/pkg/config"
 	commonHealthcheck "github.com/crypto-bundle/bc-wallet-common-lib-healthcheck/pkg/healthcheck"
 	commonLogger "github.com/crypto-bundle/bc-wallet-common-lib-logger/pkg/logger"
+	commonProfiler "github.com/crypto-bundle/bc-wallet-common-lib-profiler/pkg/profiler"
 
 	pbApi "github.com/crypto-bundle/bc-wallet-common-hdwallet-controller/pkg/grpc/hdwallet"
 )
@@ -17,6 +18,7 @@ type HdWalletConfig struct {
 	*commonConfig.BaseConfig
 	*commonLogger.LoggerConfig
 	*commonHealthcheck.HealthcheckHTTPConfig
+	*commonProfiler.ProfilerConfig
 	*pbApi.HdWalletClientConfig // yes, client config for listen on unix file socket
 	*ProcessionEnvironmentConfig
 	*VaultWrappedConfig
@@ -24,10 +26,13 @@ type HdWalletConfig struct {
 	// Internal configs
 	// -------------------
 	*MnemonicConfig
-	// VaultCommonTransitKey - common vault transit key for whole processing cluster
-	VaultCommonTransitKey string `envconfig:"VAULT_COMMON_TRANSIT_KEY" default:"-"`
-	// VaultApplicationEncryptionKey - vault encryption key for hd-wallet-controller and hd-wallet-api application
-	VaultApplicationEncryptionKey string `envconfig:"VAULT_APP_ENCRYPTION_KEY" default:"-"`
+	// VaultCommonTransitKey - common vault transit key for whole processing cluster,
+	// must be saved in common vault kv bucket, for example: crypto-bundle/bc-wallet-common/transit
+	VaultCommonTransitKey string `envconfig:"VAULT_COMMON_TRANSIT_KEY" secret:"true"`
+	// VaultApplicationEncryptionKey - vault encryption key for hd-wallet-controller and hd-wallet-api application,
+	// must be saved in bc-wallet-<blockchain_name>-hdwallet vault kv bucket,
+	// for example: crypto-bundle/bc-wallet-tron-hdwallet/common
+	VaultApplicationEncryptionKey string `envconfig:"VAULT_APP_ENCRYPTION_KEY" secret:"true"`
 	// ----------------------------
 	// Dependencies
 	baseAppCfgSrv baseConfigService

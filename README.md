@@ -28,9 +28,28 @@ Another third part of bundle - target blockchain plugin.
 
 ### Hashicorp Vault
 
+### Tron example
+Example for tron blockchain:
+
+Auth token: bc-wallet-tron-hdwallet-api
+```bash
+vault token create -display-name bc-wallet-tron-hdwallet-api
+```
+
+Buckets:
+* crypto-bundle/bc-wallet-common/transit
+    * VAULT_COMMON_TRANSIT_KEY
+* crypto-bundle/bc-wallet-tron-hdwallet/common
+    * VAULT_APP_ENCRYPTION_KEY
+
 Application required two encryption keys:
-* Common for whole crypto-bundle project transit key - crypto-bundle-bc-wallet-common-transit-key
-* Target encryption key for hdwallet-controller and hdwallet-api - crypto-bundle-bc-wallet-tron-hdwallet
+* Common for whole crypto-bundle project transit key - **crypto-bundle-bc-wallet-common-transit-key**.
+  Value with transit key name will be loaded from `VAULT_COMMON_TRANSIT_KEY` Vault variable, which stored in
+  common bucket - **crypto-bundle/bc-wallet-common/transit**.
+
+* Target encryption key for hdwallet-controller and hdwallet-api - **crypto-bundle-bc-wallet-tron-hdwallet**
+  Value with transit key name will be loaded from `VAULT_APP_ENCRYPTION_KEY` Vault variable, which stored in
+  common bucket - **crypto-bundle/bc-wallet-tron-hdwallet/common**.
 
 ### HdWallet plugin
 

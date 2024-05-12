@@ -2,16 +2,15 @@ package grpc
 
 import (
 	"context"
+	"errors"
+	"google.golang.org/grpc/reflection"
 	"net"
+	"os"
 
 	pbApi "github.com/crypto-bundle/bc-wallet-common-hdwallet-controller/pkg/grpc/hdwallet"
 
-	commonGRPCServer "github.com/crypto-bundle/bc-wallet-common-lib-grpc/pkg/server"
-
-	"go.opentelemetry.io/contrib/instrumentation/google.golang.org/grpc/otelgrpc"
 	"go.uber.org/zap"
 	"google.golang.org/grpc"
-	"google.golang.org/grpc/reflection"
 )
 
 type Server struct {
@@ -21,19 +20,20 @@ type Server struct {
 	handlers          pbApi.HdWalletApiServer
 	configSvc         configService
 
-	listener net.Listener
+	sockFilePath string
+	listener     net.Listener
 }
 
 func (s *Server) Init(_ context.Context) error {
-	options := commonGRPCServer.DefaultServeOptions()
+	//options := commonGRPCServer.DefaultServeOptions()
 	msgSizeOptions := []grpc.ServerOption{
-		grpc.MaxRecvMsgSize(commonGRPCServer.DefaultServerMaxReceiveMessageSize),
-		grpc.MaxSendMsgSize(commonGRPCServer.DefaultServerMaxSendMessageSize),
+		grpc.MaxRecvMsgSize(1024 * 1024 * 3),
+		grpc.MaxSendMsgSize(1024 * 1024 * 3),
 	}
-	options = append(options, msgSizeOptions...)
-	options = append(options, grpc.StatsHandler(otelgrpc.NewServerHandler()))
+	//options = append(options, msgSizeOptions...)
+	//options = append(options, grpc.StatsHandler(otelgrpc.NewServerHandler()))
 
-	s.grpcServerOptions = options
+	s.grpcServerOptions = msgSizeOptions
 
 	return nil
 }
@@ -43,19 +43,50 @@ func (s *Server) shutdown() error {
 
 	s.grpcServer.GracefulStop()
 
+	err := os.Remove(s.sockFilePath)
+	if err != nil {
+		return err
+	}
+
 	s.logger.Info("grpc server shutdown completed")
 
 	return nil
 }
 
 func (s *Server) ListenAndServe(ctx context.Context) (err error) {
-	listenConn, err := net.Listen("unix", s.configSvc.GetConnectionPath())
+	tf, err := os.CreateTemp(s.configSvc.GetConnectionPath(), s.configSvc.GetUnixFileNameTemplate())
+	if err != nil {
+		return err
+	}
+
+	path := tf.Name()
+
+	// Close the file and remove it because it has to not exist for
+	// the domain socket.
+	err = tf.Close()
+	if err != nil {
+		return err
+	}
+
+	err = os.Remove(path)
+	if err != nil {
+		return err
+	}
+
+	resolved, err := net.ResolveUnixAddr("unix", path)
+	if err != nil {
+		return err
+	}
+
+	listenConn, err := net.ListenUnix("unix", resolved)
 	if err != nil {
 		s.logger.Error("unable to listen", zap.Error(err),
 			zap.String("path", s.configSvc.GetConnectionPath()))
 
 		return err
 	}
+
+	s.sockFilePath = path
 	s.listener = listenConn
 
 	s.grpcServer = grpc.NewServer(s.grpcServerOptions...)
@@ -63,21 +94,38 @@ func (s *Server) ListenAndServe(ctx context.Context) (err error) {
 		reflection.Register(s.grpcServer)
 	}
 
+	go s.serve(ctx)
+
+	return nil
+}
+
+func (s *Server) serve(ctx context.Context) {
+	newCtx, causeFunc := context.WithCancelCause(ctx)
 	pbApi.RegisterHdWalletApiServer(s.grpcServer, s.handlers)
 
 	s.logger.Info("grpc serve success")
-
 	go func() {
-		err = s.grpcServer.Serve(s.listener)
+		err := s.grpcServer.Serve(s.listener)
 		if err != nil {
 			s.logger.Error("unable to start serving", zap.Error(err),
 				zap.String("path", s.configSvc.GetConnectionPath()))
+
+			causeFunc(err)
 		}
 	}()
 
-	<-ctx.Done()
+	<-newCtx.Done()
+	intErr := newCtx.Err()
+	if !errors.Is(intErr, context.Canceled) {
+		s.logger.Error("ctx cause errors", zap.Error(intErr))
+	}
 
-	return s.shutdown()
+	err := s.shutdown()
+	if err != nil {
+		s.logger.Error("unable to graceful shutdown", zap.Error(err))
+	}
+
+	return
 }
 
 // nolint:revive // fixme

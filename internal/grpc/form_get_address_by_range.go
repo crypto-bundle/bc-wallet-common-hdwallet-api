@@ -3,7 +3,6 @@ package grpc
 import (
 	"context"
 	"fmt"
-	"github.com/asaskevich/govalidator"
 	pbApi "github.com/crypto-bundle/bc-wallet-common-hdwallet-controller/pkg/grpc/hdwallet"
 	"github.com/google/uuid"
 	"google.golang.org/protobuf/types/known/anypb"
@@ -28,11 +27,6 @@ func (f *derivationAddressByRangeForm) LoadAndValidate(ctx context.Context,
 		return false, fmt.Errorf("%w:%s", ErrMissedRequiredData, "Multiple accounts parameter")
 	}
 	f.AccountsParameters = req.Parameters
-
-	_, err = govalidator.ValidateStruct(f)
-	if err != nil {
-		return false, err
-	}
 
 	mnemonicWalletUUIDRaw, err := uuid.Parse(f.MnemonicWalletUUID)
 	if err != nil {

@@ -50,6 +50,10 @@ func (h *getDerivationsAddressesHandler) Handle(ctx context.Context,
 		return nil, status.Error(codes.Internal, "something went wrong")
 	}
 
+	if count == 0 {
+		return nil, status.Error(codes.ResourceExhausted, "wallet not loaded or session already expired")
+	}
+
 	return &pbApi.GetMultipleAccountResponse{
 		WalletIdentifier:       req.WalletIdentifier,
 		AccountIdentitiesCount: uint64(count),

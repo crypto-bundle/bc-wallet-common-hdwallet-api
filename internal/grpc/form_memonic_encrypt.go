@@ -6,7 +6,6 @@ import (
 
 	pbApi "github.com/crypto-bundle/bc-wallet-common-hdwallet-controller/pkg/grpc/hdwallet"
 
-	"github.com/asaskevich/govalidator"
 	"github.com/google/uuid"
 )
 
@@ -30,11 +29,6 @@ func (f *EncryptMnemonicForm) LoadAndValidate(ctx context.Context,
 	}
 
 	f.TransitEncryptedMnemonicData = req.MnemonicData
-
-	_, err = govalidator.ValidateStruct(f)
-	if err != nil {
-		return false, err
-	}
 
 	return true, nil
 }
