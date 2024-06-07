@@ -173,3 +173,7 @@ Start of big application refactoring
 ## [v0.0.29] 08.06.2024
 ### Changed
 * Changed flow of reset unload interval - added compare of unload time value before timer reset
+
+## [v0.0.30] 08.06.2024
+### Changed
+Changed MIT License to NON-AI MIT
