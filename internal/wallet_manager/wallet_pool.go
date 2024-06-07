@@ -19,16 +19,16 @@ type unitWrapper struct {
 	ctx        context.Context
 	cancelFunc context.CancelFunc
 	Timer      *time.Timer
-	ttl        time.Duration
+	UnloadAt   time.Time
 	Unit       WalletPoolUnitService
 	notifyChan chan uuid.UUID
 }
 
-func (w *unitWrapper) Run() error {
+func (w *unitWrapper) Run(ttl time.Duration) error {
 	startedWg := &sync.WaitGroup{}
 	startedWg.Add(1)
 
-	go func(wrapped *unitWrapper, workDoneWaiter *sync.WaitGroup) {
+	go func(wrapped *unitWrapper, workDoneWaiter *sync.WaitGroup, wTTL time.Duration) {
 		rawUUID, funcErr := uuid.Parse(wrapped.Unit.GetWalletUUID())
 		if funcErr != nil {
 			wrapped.logger.Error("unable parse wallet uuid string", zap.Error(funcErr),
@@ -36,7 +36,8 @@ func (w *unitWrapper) Run() error {
 			return
 		}
 
-		wrapped.Timer = time.NewTimer(wrapped.ttl)
+		wrapped.UnloadAt = time.Now().Add(wTTL)
+		wrapped.Timer = time.NewTimer(wTTL)
 
 		workDoneWaiter.Done()
 
@@ -67,13 +68,24 @@ func (w *unitWrapper) Run() error {
 			zap.String(app.WalletUUIDTag, rawUUID.String()))
 
 		return
-	}(w, startedWg)
+	}(w, startedWg, ttl)
 
 	startedWg.Wait()
 
 	w.logger.Info("wallet successfully loaded")
 
 	return nil
+}
+
+func (w *unitWrapper) ResetTimer(ttl time.Duration) {
+	expectedUnloadTime := time.Now().Add(ttl)
+
+	if expectedUnloadTime.After(w.UnloadAt) {
+		w.UnloadAt = expectedUnloadTime
+		w.Timer.Reset(ttl)
+	}
+
+	return
 }
 
 func (w *unitWrapper) Shutdown() {
@@ -106,7 +118,6 @@ func newUnitWrapper(ctx context.Context, logger *zap.Logger,
 		logger:     logger,
 		cancelFunc: cancelFunc,
 		Timer:      nil, // will be filled in go-routine
-		ttl:        ttl,
 		Unit:       unit,
 		notifyChan: notifyChan,
 	}
@@ -162,7 +173,7 @@ func (p *Pool) AddAndStartWalletUnit(_ context.Context,
 
 	wuWrapper, isExists := p.walletUnits[walletUUID]
 	if isExists {
-		wuWrapper.Timer.Reset(timeToLive)
+		wuWrapper.ResetTimer(timeToLive)
 
 		return nil
 	}
@@ -186,7 +197,7 @@ func (p *Pool) AddAndStartWalletUnit(_ context.Context,
 
 	p.walletUnits[walletUUID] = wrapper
 
-	err = wrapper.Run()
+	err = wrapper.Run(timeToLive)
 	if err != nil {
 		return err
 	}

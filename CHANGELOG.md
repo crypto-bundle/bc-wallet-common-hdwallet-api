@@ -169,3 +169,7 @@ Start of big application refactoring
   * busybox:glibc is stage 2 image
 * Small fixes to prevent "Race Condition" state
 * Changed validation flow - removed usage of govalidator
+
+## [v0.0.29] 08.06.2024
+### Changed
+* Changed flow of reset unload interval - added compare of unload time value before timer reset
