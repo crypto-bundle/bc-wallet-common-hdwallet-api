@@ -3,7 +3,7 @@ module github.com/crypto-bundle/bc-wallet-common-hdwallet-api
 go 1.22.2
 
 require (
-	github.com/crypto-bundle/bc-wallet-common-hdwallet-controller v0.0.28
+	github.com/crypto-bundle/bc-wallet-common-hdwallet-controller v0.0.29
 	github.com/crypto-bundle/bc-wallet-common-lib-config v0.0.5
 	github.com/crypto-bundle/bc-wallet-common-lib-healthcheck v0.0.4
 	github.com/crypto-bundle/bc-wallet-common-lib-logger v0.0.4

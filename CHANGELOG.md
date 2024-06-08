@@ -176,4 +176,5 @@ Start of big application refactoring
 
 ## [v0.0.30] 08.06.2024
 ### Changed
-Changed MIT License to NON-AI MIT
+* Changed MIT License to NON-AI MIT
+* Changed version of hdwallet-controller dependency to v0.0.29
