@@ -1,7 +1,7 @@
 github.com/cenkalti/backoff/v3 v3.2.2 h1:cfUAAO3yvKMYKPrvhDuHSwQnhZNk/RMHKdZqKTxfm6M=
 github.com/cenkalti/backoff/v3 v3.2.2/go.mod h1:cIeZDE3IrqwwJl6VUwCN6trj1oXrTS4rc0ij+ULvLYs=
-github.com/crypto-bundle/bc-wallet-common-hdwallet-controller v0.0.28 h1:FH0M36zZbIwkGM8hMDQFT6L5h76RvhGKcgIT5BGTN54=
-github.com/crypto-bundle/bc-wallet-common-hdwallet-controller v0.0.28/go.mod h1:QRNNM2RZdHWkEAtjOW+pPH0OTS0Su+OoT2TovlyaPF4=
+github.com/crypto-bundle/bc-wallet-common-hdwallet-controller v0.0.29 h1:LMgi0i0qnsn8ti1vieyTtKGOlo8ki6VDGYb9bxmNsSk=
+github.com/crypto-bundle/bc-wallet-common-hdwallet-controller v0.0.29/go.mod h1:QRNNM2RZdHWkEAtjOW+pPH0OTS0Su+OoT2TovlyaPF4=
 github.com/crypto-bundle/bc-wallet-common-lib-config v0.0.5 h1:3iC2jNnt1FwT8imOgDSOEGOg5yNlTMRKydM64cL1xjA=
 github.com/crypto-bundle/bc-wallet-common-lib-config v0.0.5/go.mod h1:kQRtiYGapmcWwHrAxS3K1PTbiUspuin4q36iMdsXhHQ=
 github.com/crypto-bundle/bc-wallet-common-lib-healthcheck v0.0.4 h1:VHTy4uydhnXiEQwCQZyrHpK5w4FEgc8v82qT8J9a+1I=
