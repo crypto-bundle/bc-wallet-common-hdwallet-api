@@ -178,3 +178,10 @@ Start of big application refactoring
 ### Changed
 * Changed MIT License to NON-AI MIT
 * Changed version of hdwallet-controller dependency to v0.0.29
+
+## [v0.0.31] 09.06.2024
+### Added
+* Added support of new plugin versions - added chainID support:
+  * Lookup of GetChainID function
+  * Lookup of GetSupportedChainIDs function
+* Added support config environment variable - HDWALLET_CHAIN_ID 
