@@ -48,6 +48,9 @@ const (
 	getPluginBuildNumberSymbol   = "GetPluginBuildNumber"
 	getPluginBuildDateTSSymbol   = "GetPluginBuildDateTS"
 
+	pluginGetChainIDSymbol           = "GetChainID"
+	pluginGetSupportedChainIDsSymbol = "GetSupportedChainIDs"
+
 	pluginGenerateMnemonicSymbol = "GenerateMnemonic"
 	pluginValidateMnemonicSymbol = "ValidateMnemonic"
 	pluginNewPoolUnitSymbol      = "NewPoolUnit"
@@ -57,15 +60,26 @@ type wrapper struct {
 	pluginPath string
 	pluginName string
 
-	generateFunc   generateMnemonicFunc
-	validateFunc   validateMnemonicFunc
+	generateFunc   generateMnemonicFunction
+	validateFunc   validateMnemonicFunction
 	walletMakerClb walletMakerFunc
+
+	getChainIDFunc           getChainIDFunction
+	getSupportedChainIDsFunc getSupportedChainIDsFunction
 
 	ldFlagManager
 }
 
 func (w *wrapper) GetPluginName() string {
 	return w.pluginName
+}
+
+func (w *wrapper) GetChainID() int {
+	return w.getChainIDFunc()
+}
+
+func (w *wrapper) GetSupportedChainIDs() []int {
+	return w.getSupportedChainIDsFunc()
 }
 
 func (w *wrapper) GetMnemonicGeneratorFunc() func() (string, error) {
@@ -118,6 +132,26 @@ func (w *wrapper) Init(_ context.Context) error {
 		return err
 	}
 
+	getPluginChainIDFuncSymbol, err := p.Lookup(pluginGetChainIDSymbol)
+	if err != nil {
+		return err
+	}
+
+	getPluginChainIDFunc, ok := getPluginChainIDFuncSymbol.(func() int)
+	if !ok {
+		return fmt.Errorf("%w: %s", ErrUnableCastPluginEntry, pluginGetChainIDSymbol)
+	}
+
+	getPluginSupportedChainIDsFuncSymbol, err := p.Lookup(pluginGetSupportedChainIDsSymbol)
+	if err != nil {
+		return err
+	}
+
+	getPluginSupportedChainIDsFunc, ok := getPluginSupportedChainIDsFuncSymbol.(func() []int)
+	if !ok {
+		return fmt.Errorf("%w: %s", ErrUnableCastPluginEntry, pluginGetSupportedChainIDsSymbol)
+	}
+
 	generateMnemonicFuncSymbol, err := p.Lookup(pluginGenerateMnemonicSymbol)
 	if err != nil {
 		return err
@@ -157,6 +191,8 @@ func (w *wrapper) Init(_ context.Context) error {
 		return err
 	}
 
+	w.getChainIDFunc = getPluginChainIDFunc
+	w.getSupportedChainIDsFunc = getPluginSupportedChainIDsFunc
 	w.generateFunc = generateMnemoFunc
 	w.validateFunc = validateMnemoFunc
 	w.ldFlagManager = flagManagerSvc

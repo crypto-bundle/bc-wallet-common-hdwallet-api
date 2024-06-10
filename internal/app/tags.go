@@ -41,6 +41,7 @@ const (
 	MnemonicWalletHashTag = "mnemonic_wallet_hash"
 	WalletPurposeTag      = "purpose"
 	WalletIsHotTag        = "is_hot"
+	ConfigChainIDTag      = "config_chain_id"
 
 	GRPCBindPathTag = "grpc_bind_unix_socket_path"
 
@@ -59,4 +60,7 @@ const (
 	PluginShortCommitIDTag = "plugin_short_commit_id_tag"
 	PluginBuildNumberTag   = "plugin_build_number_tag"
 	PluginBuildDateTag     = "plugin_build_date_tag"
+
+	PluginChainIDTag           = "plugin_chain_id"
+	PluginSupportedChainIDsTag = "plugin_supported_chain_id"
 )

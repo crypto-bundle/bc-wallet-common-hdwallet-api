@@ -110,11 +110,19 @@ func main() {
 	}
 	loggerEntry.Info("plugin successfully loaded",
 		zap.String(app.PluginNameTag, pluginWrapper.GetPluginName()),
+		zap.Int(app.PluginChainIDTag, pluginWrapper.GetChainID()),
 		zap.String(app.PluginReleaseTag, pluginWrapper.GetReleaseTag()),
 		zap.Uint64(app.PluginBuildNumberTag, pluginWrapper.GetBuildNumber()),
 		zap.Int64(app.PluginBuildDateTag, pluginWrapper.GetBuildDateTS()),
 		zap.String(app.PluginCommitIDTag, pluginWrapper.GetCommitID()),
 		zap.String(app.PluginShortCommitIDTag, pluginWrapper.GetShortCommitID()))
+
+	if pluginWrapper.GetChainID() != appCfg.GetHdWalletChainID() {
+		loggerEntry.Fatal("network chainID mismatched",
+			zap.Int(app.ConfigChainIDTag, appCfg.GetHdWalletChainID()),
+			zap.Int(app.PluginChainIDTag, pluginWrapper.GetChainID()),
+			zap.Ints(app.PluginSupportedChainIDsTag, pluginWrapper.GetSupportedChainIDs()))
+	}
 
 	walletsPoolSvc := wallet_manager.NewWalletPool(ctx, loggerEntry, appCfg,
 		pluginWrapper.GetMakeWalletCallback(), encryptorSvc)

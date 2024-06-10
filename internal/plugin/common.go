@@ -34,8 +34,10 @@ package plugin
 
 import "time"
 
-type generateMnemonicFunc func() (string, error)
-type validateMnemonicFunc func(mnemonic string) bool
+type generateMnemonicFunction func() (string, error)
+type validateMnemonicFunction func(mnemonic string) bool
+type getChainIDFunction func() int
+type getSupportedChainIDsFunction func() []int
 
 type walletMakerFunc func(walletUUID string,
 	mnemonicDecryptedData string,

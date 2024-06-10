@@ -57,6 +57,8 @@ Implementation of HdWallet plugin must contains next exported functions:
 * ```NewPoolUnitfunc(walletUUID string, mnemonicDecryptedData string) (interface{}, error)```
 * ```GenerateMnemonic func() (string, error)```
 * ```ValidateMnemonic func(mnemonic string) bool```
+* ```GetChainID() int```
+* ```GetSupportedChainIDs() []int```
 * ```GetPluginName func() string```
 * ```GetPluginReleaseTag func() string```
 * ```GetPluginCommitID func() string```
