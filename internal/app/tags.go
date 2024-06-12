@@ -61,6 +61,9 @@ const (
 	PluginBuildNumberTag   = "plugin_build_number_tag"
 	PluginBuildDateTag     = "plugin_build_date_tag"
 
+	PluginBuiltInChainIDTag    = "plugin_builtin_chain_id"
+	PluginBuiltInCoinTypeTag   = "plugin_builtin_coin_type"
 	PluginChainIDTag           = "plugin_chain_id"
+	PluginCoinTypeTag          = "plugin_chain_id"
 	PluginSupportedChainIDsTag = "plugin_supported_chain_id"
 )

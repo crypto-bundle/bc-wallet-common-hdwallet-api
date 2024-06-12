@@ -32,14 +32,6 @@
 
 package plugin
 
-import (
-	"context"
-	"fmt"
-	"plugin"
-
-	commonConfig "github.com/crypto-bundle/bc-wallet-common-lib-config/pkg/config"
-)
-
 const (
 	getPluginNameSymbol          = "GetPluginName"
 	getPluginReleaseTagSymbol    = "GetPluginReleaseTag"
@@ -50,6 +42,11 @@ const (
 
 	pluginGetChainIDSymbol           = "GetChainID"
 	pluginGetSupportedChainIDsSymbol = "GetSupportedChainIDs"
+	pluginSetChainIDSymbol           = "SetChainID"
+
+	pluginGetCoinTypeSymbol           = "GetHdWalletCoinType"
+	pluginGetSupportedCoinTypesSymbol = "GetSupportedCoinTypesInfo"
+	pluginSetCoinTypeSymbol           = "SetHdWalletCoinType"
 
 	pluginGenerateMnemonicSymbol = "GenerateMnemonic"
 	pluginValidateMnemonicSymbol = "ValidateMnemonic"
@@ -60,12 +57,20 @@ type wrapper struct {
 	pluginPath string
 	pluginName string
 
+	coinType int
+	chainID  int
+
 	generateFunc   generateMnemonicFunction
 	validateFunc   validateMnemonicFunction
 	walletMakerClb walletMakerFunc
 
 	getChainIDFunc           getChainIDFunction
 	getSupportedChainIDsFunc getSupportedChainIDsFunction
+	//setChainIDFunc           setChainIDFunction
+
+	getCoinTypeFunc          getCoinTypeFunction
+	getSupportedCoinTypeFunc getSupportedCoinTypesFunction
+	//setCoinTypeFunc          setCoinTypeFunction
 
 	ldFlagManager
 }
@@ -78,9 +83,25 @@ func (w *wrapper) GetChainID() int {
 	return w.getChainIDFunc()
 }
 
-func (w *wrapper) GetSupportedChainIDs() []int {
+func (w *wrapper) GetSupportedChainIDs() string {
 	return w.getSupportedChainIDsFunc()
 }
+
+//func (w *wrapper) SetChainID(chainID int) error {
+//	return w.setChainIDFunc(chainID)
+//}
+
+func (w *wrapper) GetCoinType() int {
+	return w.getCoinTypeFunc()
+}
+
+func (w *wrapper) GetSupportedCoinTypesInfo() string {
+	return w.getSupportedCoinTypeFunc()
+}
+
+//func (w *wrapper) SetCoinType(coinType int) error {
+//	return w.setCoinTypeFunc(coinType)
+//}
 
 func (w *wrapper) GetMnemonicGeneratorFunc() func() (string, error) {
 	return w.generateFunc
@@ -96,115 +117,15 @@ func (w *wrapper) GetMakeWalletCallback() func(walletUUID string,
 	return w.walletMakerClb
 }
 
-func (w *wrapper) Init(_ context.Context) error {
-	p, err := plugin.Open(w.pluginPath)
-	if err != nil {
-		return err
-	}
-
-	getPluginNameFunc, err := stringFuncSymbolLookUp(p, getPluginNameSymbol)
-	if err != nil {
-		return err
-	}
-
-	getPluginReleaseTagFunc, err := stringFuncSymbolLookUp(p, getPluginReleaseTagSymbol)
-	if err != nil {
-		return err
-	}
-
-	getPluginCommitIDFunc, err := stringFuncSymbolLookUp(p, getPluginCommitIDSymbol)
-	if err != nil {
-		return err
-	}
-
-	getPluginShortCommitIDFunc, err := stringFuncSymbolLookUp(p, getPluginShortCommitIDSymbol)
-	if err != nil {
-		return err
-	}
-
-	getPluginBuildNumberFunc, err := stringFuncSymbolLookUp(p, getPluginBuildNumberSymbol)
-	if err != nil {
-		return err
-	}
-
-	getPluginBuildDateTSFunc, err := stringFuncSymbolLookUp(p, getPluginBuildDateTSSymbol)
-	if err != nil {
-		return err
-	}
-
-	getPluginChainIDFuncSymbol, err := p.Lookup(pluginGetChainIDSymbol)
-	if err != nil {
-		return err
-	}
-
-	getPluginChainIDFunc, ok := getPluginChainIDFuncSymbol.(func() int)
-	if !ok {
-		return fmt.Errorf("%w: %s", ErrUnableCastPluginEntry, pluginGetChainIDSymbol)
-	}
-
-	getPluginSupportedChainIDsFuncSymbol, err := p.Lookup(pluginGetSupportedChainIDsSymbol)
-	if err != nil {
-		return err
-	}
-
-	getPluginSupportedChainIDsFunc, ok := getPluginSupportedChainIDsFuncSymbol.(func() []int)
-	if !ok {
-		return fmt.Errorf("%w: %s", ErrUnableCastPluginEntry, pluginGetSupportedChainIDsSymbol)
-	}
-
-	generateMnemonicFuncSymbol, err := p.Lookup(pluginGenerateMnemonicSymbol)
-	if err != nil {
-		return err
-	}
-
-	generateMnemoFunc, ok := generateMnemonicFuncSymbol.(func() (string, error))
-	if !ok {
-		return fmt.Errorf("%w: %s", ErrUnableCastPluginEntry, pluginGenerateMnemonicSymbol)
-	}
-
-	validateMnemonicFuncSymbol, err := p.Lookup(pluginValidateMnemonicSymbol)
-	if err != nil {
-		return err
-	}
-
-	validateMnemoFunc, ok := validateMnemonicFuncSymbol.(func(mnemonic string) bool)
-	if !ok {
-		return fmt.Errorf("%w: %s", ErrUnableCastPluginEntry, pluginValidateMnemonicSymbol)
-	}
-
-	unitMakerFuncSymbol, err := p.Lookup(pluginNewPoolUnitSymbol)
-	if err != nil {
-		return err
-	}
-
-	unitMakerFunc, ok := unitMakerFuncSymbol.(func(walletUUID string,
-		mnemonicDecryptedData string,
-	) (interface{}, error))
-	if !ok {
-		return fmt.Errorf("%w: %s", ErrUnableCastPluginEntry, pluginNewPoolUnitSymbol)
-	}
-
-	flagManagerSvc, err := commonConfig.NewLdFlagsManager(getPluginReleaseTagFunc(),
-		getPluginCommitIDFunc(), getPluginShortCommitIDFunc(),
-		getPluginBuildNumberFunc(), getPluginBuildDateTSFunc())
-	if err != nil {
-		return err
-	}
-
-	w.getChainIDFunc = getPluginChainIDFunc
-	w.getSupportedChainIDsFunc = getPluginSupportedChainIDsFunc
-	w.generateFunc = generateMnemoFunc
-	w.validateFunc = validateMnemoFunc
-	w.ldFlagManager = flagManagerSvc
-	w.pluginName = getPluginNameFunc()
-	w.walletMakerClb = unitMakerFunc
-
-	return nil
-}
-
-func NewPlugin(pluginPath string) *wrapper {
+func NewPlugin(pluginPath string,
+	coinType int,
+	chainID int,
+) *wrapper {
 	return &wrapper{
-		pluginPath:     pluginPath,
+		pluginPath: pluginPath,
+		coinType:   coinType,
+		chainID:    chainID,
+
 		pluginName:     "",
 		walletMakerClb: nil,
 		ldFlagManager:  nil,

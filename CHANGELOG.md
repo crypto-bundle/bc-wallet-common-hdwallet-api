@@ -1,5 +1,18 @@
 # Change Log
 
+## [v0.0.32] 12.06.2024
+### Added
+* Added support of new plugin versions - added coinType support:
+  * Lookup of GetHdWalletCoinType function
+  * Lookup of GetSupportedCoinTypesInfo function
+  * Lookup of SetHdWalletCoinType function
+* Added support config environment variable - HDWALLET_COIN_TYPE
+### Changed
+* Changed plugin API for chainID flow:
+  * Changed func signature for GetSupportedChainIDs
+  * Added lookup of SetChainID function
+* Changes in plugin wrapper init flow
+
 ## [v0.0.31] 09.06.2024
 ### Added
 * Added support of new plugin versions - added chainID support:

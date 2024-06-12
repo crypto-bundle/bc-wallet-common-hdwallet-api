@@ -36,4 +36,5 @@ import "errors"
 
 var (
 	ErrUnableCastPluginEntry = errors.New("unable to cast plugin entry to target")
+	ErrMismatchedPluginValue = errors.New("mismatched plugin values")
 )
