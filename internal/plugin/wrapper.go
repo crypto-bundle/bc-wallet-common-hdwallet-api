@@ -41,7 +41,7 @@ const (
 	getPluginBuildDateTSSymbol   = "GetPluginBuildDateTS"
 
 	pluginGetChainIDSymbol           = "GetChainID"
-	pluginGetSupportedChainIDsSymbol = "GetSupportedChainIDs"
+	pluginGetSupportedChainIDsSymbol = "GetSupportedChainIDsInfo"
 	pluginSetChainIDSymbol           = "SetChainID"
 
 	pluginGetCoinTypeSymbol           = "GetHdWalletCoinType"
