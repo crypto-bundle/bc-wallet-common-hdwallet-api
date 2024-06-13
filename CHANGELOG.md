@@ -1,6 +1,6 @@
 # Change Log
 
-## [v0.0.32] 12.06.2024
+## [v0.0.32] 13.06.2024
 ### Added
 * Added support of new plugin versions - added coinType support:
   * Lookup of GetHdWalletCoinType function
