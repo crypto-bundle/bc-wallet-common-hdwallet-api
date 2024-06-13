@@ -39,20 +39,11 @@ const (
 	WalletUUIDTag         = "wallet_uuid"
 	MnemonicWalletUUIDTag = "mnemonic_wallet_uuid"
 	MnemonicWalletHashTag = "mnemonic_wallet_hash"
-	WalletPurposeTag      = "purpose"
-	WalletIsHotTag        = "is_hot"
 	ConfigChainIDTag      = "config_chain_id"
 
 	GRPCBindPathTag = "grpc_bind_unix_socket_path"
 
 	TickerEventTriggerTimeTag = "ticker_time"
-
-	HDWalletAccountIndexTag  = "hd_wallet_account_index"
-	HDWalletInternalIndexTag = "hd_wallet_internal_index"
-	HDWalletAddressIndexTag  = "hd_wallet_address_index"
-	HDWalletAddressTag       = "hd_wallet_address"
-
-	NatsCacheBucketNameTag = "nats_kv_bucket_name"
 
 	PluginNameTag          = "plugin_name"
 	PluginReleaseTag       = "plugin_release_tag"
@@ -62,5 +53,6 @@ const (
 	PluginBuildDateTag     = "plugin_build_date_tag"
 
 	PluginChainIDTag           = "plugin_chain_id"
+	PluginCoinTypeTag          = "plugin_chain_id"
 	PluginSupportedChainIDsTag = "plugin_supported_chain_id"
 )

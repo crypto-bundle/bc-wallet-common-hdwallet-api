@@ -54,11 +54,15 @@ Application required two encryption keys:
 ### HdWallet plugin
 
 Implementation of HdWallet plugin must contains next exported functions:
-* ```NewPoolUnitfunc(walletUUID string, mnemonicDecryptedData string) (interface{}, error)```
+* ```NewPoolUnit func(walletUUID string, mnemonicDecryptedData string) (interface{}, error)```
 * ```GenerateMnemonic func() (string, error)```
 * ```ValidateMnemonic func(mnemonic string) bool```
 * ```GetChainID() int```
-* ```GetSupportedChainIDs() []int```
+* ```SetChainID(chainID int) error```
+* ```GetSupportedChainIDsInfo() string```
+* ```GetHdWalletCoinType() int```
+* ```SetHdWalletCoinType(coinType int) error```
+* ```GetSupportedCoinTypesInfo() string```
 * ```GetPluginName func() string```
 * ```GetPluginReleaseTag func() string```
 * ```GetPluginCommitID func() string```

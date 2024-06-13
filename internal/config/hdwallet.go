@@ -43,6 +43,7 @@ var (
 type MnemonicConfig struct {
 	MnemonicWordCount uint8  `envconfig:"HDWALLET_WORDS_COUNT" default:"24"`
 	ChainID           int    `envconfig:"HDWALLET_CHAIN_ID" default:"-1"`
+	CoinType          int    `envconfig:"HDWALLET_COIN_TYPE" default:"-1"`
 	PluginPath        string `envconfig:"HDWALLET_PLUGIN_PATH" default:"/usr/local/bin/hdwallet_plugin.so"`
 
 	baseAppCfgSrv baseConfigService
@@ -53,6 +54,9 @@ func (c *MnemonicConfig) GetDefaultMnemonicWordsCount() uint8 {
 }
 func (c *MnemonicConfig) GetHdWalletChainID() int {
 	return c.ChainID
+}
+func (c *MnemonicConfig) GetHdWalletCoinType() int {
+	return c.CoinType
 }
 func (c *MnemonicConfig) GetHdWalletPluginPath() string {
 	return c.PluginPath

@@ -36,8 +36,14 @@ import "time"
 
 type generateMnemonicFunction func() (string, error)
 type validateMnemonicFunction func(mnemonic string) bool
+
 type getChainIDFunction func() int
-type getSupportedChainIDsFunction func() []int
+type getSupportedChainIDsFunction func() string
+type setChainIDFunction func(chainID int) error
+
+type getCoinTypeFunction func() int
+type getSupportedCoinTypesFunction func() string
+type setCoinTypeFunction func(coinType int) error
 
 type walletMakerFunc func(walletUUID string,
 	mnemonicDecryptedData string,
