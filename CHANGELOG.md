@@ -1,6 +1,6 @@
 # Change Log
 
-## [v0.0.33] 18.06.2024
+## [v0.0.33] 22.06.2024
 ### Changed
 * Changed config init flow
 * Changed version of hdwallet-controller dependency to v0.0.30
