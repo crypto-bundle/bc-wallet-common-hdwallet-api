@@ -3,13 +3,13 @@ module github.com/crypto-bundle/bc-wallet-common-hdwallet-api
 go 1.22.2
 
 require (
-	github.com/crypto-bundle/bc-wallet-common-hdwallet-controller v0.0.29
+	github.com/crypto-bundle/bc-wallet-common-hdwallet-controller v0.0.30
 	github.com/crypto-bundle/bc-wallet-common-lib-config v0.0.5
 	github.com/crypto-bundle/bc-wallet-common-lib-healthcheck v0.0.4
 	github.com/crypto-bundle/bc-wallet-common-lib-logger v0.0.4
 	github.com/crypto-bundle/bc-wallet-common-lib-profiler v0.0.2
 	github.com/crypto-bundle/bc-wallet-common-lib-tracer v0.0.4
-	github.com/crypto-bundle/bc-wallet-common-lib-vault v0.0.14
+	github.com/crypto-bundle/bc-wallet-common-lib-vault v0.0.17
 	github.com/google/uuid v1.6.0
 	go.uber.org/zap v1.27.0
 	google.golang.org/grpc v1.63.2

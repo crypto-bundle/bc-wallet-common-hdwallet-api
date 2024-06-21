@@ -1,7 +1,7 @@
 github.com/cenkalti/backoff/v3 v3.2.2 h1:cfUAAO3yvKMYKPrvhDuHSwQnhZNk/RMHKdZqKTxfm6M=
 github.com/cenkalti/backoff/v3 v3.2.2/go.mod h1:cIeZDE3IrqwwJl6VUwCN6trj1oXrTS4rc0ij+ULvLYs=
-github.com/crypto-bundle/bc-wallet-common-hdwallet-controller v0.0.29 h1:LMgi0i0qnsn8ti1vieyTtKGOlo8ki6VDGYb9bxmNsSk=
-github.com/crypto-bundle/bc-wallet-common-hdwallet-controller v0.0.29/go.mod h1:QRNNM2RZdHWkEAtjOW+pPH0OTS0Su+OoT2TovlyaPF4=
+github.com/crypto-bundle/bc-wallet-common-hdwallet-controller v0.0.30 h1:kxO9XknI4z+FYTk70Y1FIU/EZzAT+V6u8uxHKNkbD78=
+github.com/crypto-bundle/bc-wallet-common-hdwallet-controller v0.0.30/go.mod h1:OlHtKW5/q5zXzHv5qMVMcy8e5g9PJyLeoECAHwLLAaA=
 github.com/crypto-bundle/bc-wallet-common-lib-config v0.0.5 h1:3iC2jNnt1FwT8imOgDSOEGOg5yNlTMRKydM64cL1xjA=
 github.com/crypto-bundle/bc-wallet-common-lib-config v0.0.5/go.mod h1:kQRtiYGapmcWwHrAxS3K1PTbiUspuin4q36iMdsXhHQ=
 github.com/crypto-bundle/bc-wallet-common-lib-healthcheck v0.0.4 h1:VHTy4uydhnXiEQwCQZyrHpK5w4FEgc8v82qT8J9a+1I=
@@ -12,8 +12,8 @@ github.com/crypto-bundle/bc-wallet-common-lib-profiler v0.0.2 h1:Ez4ncID27P5tNAf
 github.com/crypto-bundle/bc-wallet-common-lib-profiler v0.0.2/go.mod h1:0IssrlM18k8G1PQNCy80dxWzvK8goTm+1K57J2vaPvI=
 github.com/crypto-bundle/bc-wallet-common-lib-tracer v0.0.4 h1:eA7reS5+GSIA+aSY+o7hxmOR2moX6DhEmqdyXNL43tw=
 github.com/crypto-bundle/bc-wallet-common-lib-tracer v0.0.4/go.mod h1:GlwbWJ4T8eg+zPpho9kqvRQX5op1F2qnvA6yqzIBqLc=
-github.com/crypto-bundle/bc-wallet-common-lib-vault v0.0.14 h1:F52lPNejBrjkEYV3zynhzizbu8DO5+9MX+K1zznZqAY=
-github.com/crypto-bundle/bc-wallet-common-lib-vault v0.0.14/go.mod h1:9dTAn9yU8M5X3iSqLD2sw/5q4SnfbLze60YsgolqkZg=
+github.com/crypto-bundle/bc-wallet-common-lib-vault v0.0.17 h1:O2aTY9S6fz9Xbg0GMPHaq2kTGfKPpLlyGDTRUJ9yFPM=
+github.com/crypto-bundle/bc-wallet-common-lib-vault v0.0.17/go.mod h1:UwzJZnsbcZIX7zv/qspLSW9ADhZJ3t04Gq2NzXxX9tQ=
 github.com/davecgh/go-spew v1.1.1 h1:vj9j/u1bqnvCEfJOwUhtlOARqs3+rkHYY13jYWTU97c=
 github.com/davecgh/go-spew v1.1.1/go.mod h1:J7Y8YcW2NihsgmVo/mv3lAwl/skON4iLHjSsI+c5H38=
 github.com/fatih/color v1.16.0 h1:zmkK9Ngbjj+K0yRhTVONQh1p/HknKYSlNT+vZCzyokM=

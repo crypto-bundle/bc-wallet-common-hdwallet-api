@@ -34,12 +34,9 @@ package config
 
 import (
 	"fmt"
-	commonConfig "github.com/crypto-bundle/bc-wallet-common-lib-config/pkg/config"
-	commonHealthcheck "github.com/crypto-bundle/bc-wallet-common-lib-healthcheck/pkg/healthcheck"
-	commonLogger "github.com/crypto-bundle/bc-wallet-common-lib-logger/pkg/logger"
-	commonProfiler "github.com/crypto-bundle/bc-wallet-common-lib-profiler/pkg/profiler"
-
 	pbApi "github.com/crypto-bundle/bc-wallet-common-hdwallet-controller/pkg/grpc/hdwallet"
+	commonHealthcheck "github.com/crypto-bundle/bc-wallet-common-lib-healthcheck/pkg/healthcheck"
+	commonProfiler "github.com/crypto-bundle/bc-wallet-common-lib-profiler/pkg/profiler"
 )
 
 // HdWalletConfig for application
@@ -47,12 +44,9 @@ type HdWalletConfig struct {
 	// -------------------
 	// External common configs
 	// -------------------
-	*commonConfig.BaseConfig
-	*commonLogger.LoggerConfig
 	*commonHealthcheck.HealthcheckHTTPConfig
 	*commonProfiler.ProfilerConfig
 	*pbApi.HdWalletClientConfig // yes, client config for listen on unix file socket
-	*ProcessionEnvironmentConfig
 	*VaultWrappedConfig
 	// -------------------
 	// Internal configs
@@ -67,7 +61,9 @@ type HdWalletConfig struct {
 	VaultApplicationEncryptionKey string `envconfig:"VAULT_APP_ENCRYPTION_KEY" secret:"true"`
 	// ----------------------------
 	// Dependencies
-	baseAppCfgSrv baseConfigService
+	baseAppCfgSvc       baseConfigService
+	loggerCfgSvc        loggerCfgService
+	processingEnvCfgSvc processingEnvironmentConfigService
 }
 
 func (c *HdWalletConfig) GetVaultCommonTransit() string {
@@ -80,9 +76,9 @@ func (c *HdWalletConfig) GetVaultAppEncryptionKey() string {
 
 // Prepare variables to static configuration
 func (c *HdWalletConfig) Prepare() error {
-	appName := fmt.Sprintf(ApplicationManagerNameTpl, c.ProcessionEnvironmentConfig.GetNetworkName())
+	appName := fmt.Sprintf(ApplicationManagerNameTpl, c.processingEnvCfgSvc.GetNetworkName())
 
-	c.baseAppCfgSrv.SetApplicationName(appName)
+	c.baseAppCfgSvc.SetApplicationName(appName)
 
 	return nil
 }
@@ -91,7 +87,11 @@ func (c *HdWalletConfig) PrepareWith(cfgSvcList ...interface{}) error {
 	for _, cfgSrv := range cfgSvcList {
 		switch castedCfg := cfgSrv.(type) {
 		case baseConfigService:
-			c.baseAppCfgSrv = castedCfg
+			c.baseAppCfgSvc = castedCfg
+		case processingEnvironmentConfigService:
+			c.processingEnvCfgSvc = castedCfg
+		case loggerCfgService:
+			c.loggerCfgSvc = castedCfg
 		default:
 			continue
 		}

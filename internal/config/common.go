@@ -33,8 +33,10 @@
 package config
 
 import (
+	commonLogger "github.com/crypto-bundle/bc-wallet-common-lib-logger/pkg/logger"
 	"time"
 
+	commonConfig "github.com/crypto-bundle/bc-wallet-common-lib-config/pkg/config"
 	commonVault "github.com/crypto-bundle/bc-wallet-common-lib-vault/pkg/vault"
 	commonVaultTokenClient "github.com/crypto-bundle/bc-wallet-common-lib-vault/pkg/vault/client/token"
 )
@@ -63,7 +65,24 @@ type baseConfigService interface {
 	GetBuildDate() time.Time
 }
 
+type loggerCfgService interface {
+	GetMinimalLogLevel() string
+	IsStacktraceEnabled() bool
+	GetSkipBuildInfo() bool
+}
+
+type processingEnvironmentConfigService interface {
+	GetProviderName() string
+	GetNetworkName() string
+}
+
 type VaultWrappedConfig struct {
 	*commonVault.BaseConfig
 	*commonVaultTokenClient.AuthConfig
+}
+
+type BaseConfigWrapper struct {
+	*commonConfig.BaseConfig
+	*commonLogger.LoggerConfig
+	*ProcessionEnvironmentConfig
 }
