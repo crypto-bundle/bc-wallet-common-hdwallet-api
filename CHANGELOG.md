@@ -1,5 +1,13 @@
 # Change Log
 
+## [v0.0.33] 22.06.2024
+### Changed
+* Changed config init flow
+* Changed version of hdwallet-controller dependency to v0.0.30
+* Bump common-lib-vault version - bc-wallet-common-lib-vault v0.0.17
+  * Added new environment variables VAULT_AUTH_TOKEN_FILE_PATH and VAULT_AUTH_TOKEN_RENEW_TTL to *-example.env files
+  * Implemented new vault client init flow
+
 ## [v0.0.32] 13.06.2024
 ### Added
 * Added support of new plugin versions - added coinType support:

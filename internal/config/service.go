@@ -35,13 +35,33 @@ package config
 import (
 	"context"
 	"fmt"
+	commonLogger "github.com/crypto-bundle/bc-wallet-common-lib-logger/pkg/logger"
+	"log"
+	"os"
+
 	commonConfig "github.com/crypto-bundle/bc-wallet-common-lib-config/pkg/config"
 	commonVault "github.com/crypto-bundle/bc-wallet-common-lib-vault/pkg/vault"
 	commonVaultTokenClient "github.com/crypto-bundle/bc-wallet-common-lib-vault/pkg/vault/client/token"
-	"os"
 )
 
-func PrepareVault(ctx context.Context, baseCfgSrv baseConfigService) (*commonVault.Service, error) {
+func PrepareLogger(ctx context.Context,
+	baseCfgSrv baseConfigService,
+) (*commonLogger.LoggerConfig, error) {
+	cfgPreparerSrv := commonConfig.NewConfigManager()
+	loggerCfg := &commonLogger.LoggerConfig{}
+
+	err := cfgPreparerSrv.PrepareTo(loggerCfg).With(baseCfgSrv).Do(ctx)
+	if err != nil {
+		return nil, err
+	}
+
+	return loggerCfg, nil
+}
+
+func PrepareVault(ctx context.Context,
+	baseCfgSrv baseConfigService,
+	stdLogger *log.Logger,
+) (*commonVault.Service, error) {
 	cfgPreparerSrv := commonConfig.NewConfigManager()
 	vaultCfg := &VaultWrappedConfig{
 		BaseConfig: &commonVault.BaseConfig{},
@@ -57,55 +77,50 @@ func PrepareVault(ctx context.Context, baseCfgSrv baseConfigService) (*commonVau
 		return nil, err
 	}
 
-	vaultSrv, err := commonVault.NewService(ctx, vaultCfg, vaultClientSrv)
+	vaultSvc, err := commonVault.NewService(stdLogger, vaultCfg, vaultClientSrv)
 	if err != nil {
 		return nil, err
 	}
 
-	_, err = vaultSrv.Login(ctx)
+	_, err = vaultSvc.Login(ctx)
 	if err != nil {
 		return nil, err
 	}
 
-	return vaultSrv, nil
+	return vaultSvc, nil
 }
 
-func Prepare(ctx context.Context,
-	releaseTag,
-	commitID,
-	shortCommitID,
-	buildNumber,
-	buildDateTS string,
+func PrepareAppCfg(ctx context.Context,
+	wrappedBaseCfgSvc *BaseConfigWrapper,
+	stdLogger *log.Logger,
 ) (*HdWalletConfig, *commonVault.Service, error) {
-	appName := fmt.Sprintf(ApplicationManagerNameTpl, os.Getenv(ProcessingNetworkEnvName))
+	baseCfg, loggerCfg, envProcCfg := wrappedBaseCfgSvc.BaseConfig,
+		wrappedBaseCfgSvc.LoggerConfig,
+		wrappedBaseCfgSvc.ProcessionEnvironmentConfig
 
-	baseCfgSrv, err := PrepareBaseConfig(ctx, releaseTag,
-		commitID, shortCommitID,
-		buildNumber, buildDateTS, appName)
+	vaultSecretSvc, err := PrepareVault(ctx, baseCfg, stdLogger)
 	if err != nil {
 		return nil, nil, err
 	}
 
-	vaultSecretSrv, err := PrepareVault(ctx, baseCfgSrv)
-	if err != nil {
-		return nil, nil, err
-	}
-
-	err = vaultSecretSrv.LoadSecrets(ctx)
+	err = vaultSecretSvc.LoadSecrets(ctx)
 	if err != nil {
 		return nil, nil, err
 	}
 
 	appCfgPreparerSrv := commonConfig.NewConfigManager()
 	wrappedConfig := &HdWalletConfig{}
-	err = appCfgPreparerSrv.PrepareTo(wrappedConfig).With(baseCfgSrv, vaultSecretSrv).Do(ctx)
+	err = appCfgPreparerSrv.PrepareTo(wrappedConfig).With(baseCfg,
+		loggerCfg, envProcCfg, vaultSecretSvc).Do(ctx)
 	if err != nil {
 		return nil, nil, err
 	}
 
-	wrappedConfig.BaseConfig = baseCfgSrv
+	wrappedConfig.baseAppCfgSvc = baseCfg
+	wrappedConfig.loggerCfgSvc = loggerCfg
+	wrappedConfig.processingEnvCfgSvc = envProcCfg
 
-	return wrappedConfig, vaultSecretSrv, nil
+	return wrappedConfig, vaultSecretSvc, nil
 }
 
 func PrepareBaseConfig(ctx context.Context,
@@ -113,10 +128,11 @@ func PrepareBaseConfig(ctx context.Context,
 	commitID,
 	shortCommitID,
 	buildNumber,
-	buildDateTS,
-	applicationName string,
-) (*commonConfig.BaseConfig, error) {
-	flagManagerSrv, err := commonConfig.NewLdFlagsManager(releaseTag,
+	buildDateTS string,
+) (*BaseConfigWrapper, error) {
+	appName := fmt.Sprintf(ApplicationManagerNameTpl, os.Getenv(ProcessingNetworkEnvName))
+
+	flagManagerSvc, err := commonConfig.NewLdFlagsManager(releaseTag,
 		commitID, shortCommitID,
 		buildNumber, buildDateTS)
 	if err != nil {
@@ -128,12 +144,28 @@ func PrepareBaseConfig(ctx context.Context,
 		return nil, err
 	}
 
-	baseCfgPreparerSrv := commonConfig.NewConfigManager()
-	baseCfg := commonConfig.NewBaseConfig(applicationName)
-	err = baseCfgPreparerSrv.PrepareTo(baseCfg).With(flagManagerSrv).Do(ctx)
+	baseCfgPreparerSvc := commonConfig.NewConfigManager()
+	baseCfg := commonConfig.NewBaseConfig(appName)
+	err = baseCfgPreparerSvc.PrepareTo(baseCfg).With(flagManagerSvc).Do(ctx)
 	if err != nil {
 		return nil, err
 	}
 
-	return baseCfg, nil
+	loggerConfig, err := PrepareLogger(ctx, baseCfg)
+	if err != nil {
+		return nil, err
+	}
+
+	procEnvConfig := &ProcessionEnvironmentConfig{}
+	procEnvCfgPreparerSvc := commonConfig.NewConfigManager()
+	err = procEnvCfgPreparerSvc.PrepareTo(procEnvConfig).With(baseCfg).Do(ctx)
+	if err != nil {
+		return nil, err
+	}
+
+	return &BaseConfigWrapper{
+		BaseConfig:                  baseCfg,
+		LoggerConfig:                loggerConfig,
+		ProcessionEnvironmentConfig: procEnvConfig,
+	}, nil
 }

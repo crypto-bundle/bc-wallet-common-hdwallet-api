@@ -74,31 +74,37 @@ var (
 	// BuildNumber - ci/cd build number for BuildNumber
 	// DO NOT EDIT THIS VARIABLE DIRECTLY. These are build-time constants
 	// DO NOT USE THESE VARIABLES IN APPLICATION CODE
-	BuildNumber string = "100500"
+	BuildNumber = "100500"
 
 	// BuildDateTS - ci/cd build date in time stamp
 	// DO NOT EDIT THIS VARIABLE DIRECTLY. These are build-time constants
 	// DO NOT USE THESE VARIABLES IN APPLICATION CODE
-	BuildDateTS string = "1713280105"
+	BuildDateTS = "1713280105"
 )
 
 func main() {
 	var err error
 	ctx, cancelCtxFunc := context.WithCancel(context.Background())
 
-	appCfg, vaultSvc, err := config.Prepare(ctx, ReleaseTag,
+	wrappedBaseCfg, err := config.PrepareBaseConfig(ctx, ReleaseTag,
 		CommitID, ShortCommitID,
 		BuildNumber, BuildDateTS)
 	if err != nil {
 		log.Fatal(err.Error(), err)
 	}
 
-	loggerSrv, err := commonLogger.NewService(appCfg)
+	loggerSvc, err := commonLogger.NewService(wrappedBaseCfg)
 	if err != nil {
 		log.Fatal(err.Error(), err)
 	}
-	loggerEntry := loggerSrv.NewLoggerEntry("main").
-		With(zap.String(app.BlockChainNameTag, appCfg.GetNetworkName()))
+	loggerEntry := loggerSvc.NewLoggerEntry("main").
+		With(zap.String(app.BlockChainNameTag, wrappedBaseCfg.GetNetworkName()))
+
+	appCfg, vaultSvc, err := config.PrepareAppCfg(ctx, wrappedBaseCfg,
+		zap.NewStdLog(loggerEntry))
+	if err != nil {
+		log.Fatal(err.Error(), err)
+	}
 
 	transitSvc := commonVault.NewEncryptService(vaultSvc, appCfg.GetVaultCommonTransit())
 	encryptorSvc := commonVault.NewEncryptService(vaultSvc, appCfg.GetVaultCommonTransit())
