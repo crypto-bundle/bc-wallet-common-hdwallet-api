@@ -3,7 +3,7 @@
  *
  * MIT NON-AI License
  *
- * Copyright (c) 2022-2024 Aleksei Kotelnikov(gudron2s@gmail.com)
+ * Copyright (c) 2022-2025 Aleksei Kotelnikov(gudron2s@gmail.com)
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of the software and associated documentation files (the "Software"),
  * to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense,
@@ -73,6 +73,7 @@ type wrapper struct {
 	//setCoinTypeFunc          setCoinTypeFunction
 
 	ldFlagManager
+	errFmtSvc errorFormatterService
 }
 
 func (w *wrapper) GetPluginName() string {
@@ -117,7 +118,8 @@ func (w *wrapper) GetMakeWalletCallback() func(walletUUID string,
 	return w.walletMakerClb
 }
 
-func NewPlugin(pluginPath string,
+func NewPlugin(errFmtSvc errorFormatterService,
+	pluginPath string,
 	coinType int,
 	chainID int,
 ) *wrapper {
@@ -129,5 +131,6 @@ func NewPlugin(pluginPath string,
 		pluginName:     "",
 		walletMakerClb: nil,
 		ldFlagManager:  nil,
+		errFmtSvc:      errFmtSvc,
 	}
 }

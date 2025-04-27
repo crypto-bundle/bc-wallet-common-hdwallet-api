@@ -1,5 +1,10 @@
 # Change Log
 
+## [v0.0.34] 27.04.2025
+### Changed
+* Changed common-libs versions. Fixed some vulnerabilities issues.
+* Changed copyright year in LICENSE file and in licence banner in *.go files
+
 ## [v0.0.33] 22.06.2024
 ### Changed
 * Changed config init flow

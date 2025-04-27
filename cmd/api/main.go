@@ -3,7 +3,7 @@
  *
  * MIT NON-AI License
  *
- * Copyright (c) 2022-2024 Aleksei Kotelnikov(gudron2s@gmail.com)
+ * Copyright (c) 2022-2025 Aleksei Kotelnikov(gudron2s@gmail.com)
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of the software and associated documentation files (the "Software"),
  * to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense,
@@ -34,9 +34,6 @@ package main
 
 import (
 	"context"
-	"github.com/crypto-bundle/bc-wallet-common-hdwallet-api/internal/plugin"
-	commonHealthcheck "github.com/crypto-bundle/bc-wallet-common-lib-healthcheck/pkg/healthcheck"
-	commonProfiler "github.com/crypto-bundle/bc-wallet-common-lib-profiler/pkg/profiler"
 	"log"
 	"os"
 	"os/signal"
@@ -45,9 +42,13 @@ import (
 	"github.com/crypto-bundle/bc-wallet-common-hdwallet-api/internal/app"
 	"github.com/crypto-bundle/bc-wallet-common-hdwallet-api/internal/config"
 	"github.com/crypto-bundle/bc-wallet-common-hdwallet-api/internal/grpc"
+	"github.com/crypto-bundle/bc-wallet-common-hdwallet-api/internal/plugin"
 	"github.com/crypto-bundle/bc-wallet-common-hdwallet-api/internal/wallet_manager"
 
+	commonErrFmt "github.com/crypto-bundle/bc-wallet-common-lib-errors/pkg/errformatter"
+	commonHealthcheck "github.com/crypto-bundle/bc-wallet-common-lib-healthcheck/pkg/healthcheck"
 	commonLogger "github.com/crypto-bundle/bc-wallet-common-lib-logger/pkg/logger"
+	commonProfiler "github.com/crypto-bundle/bc-wallet-common-lib-profiler/pkg/profiler"
 	commonVault "github.com/crypto-bundle/bc-wallet-common-lib-vault/pkg/vault"
 
 	"go.uber.org/zap"
@@ -86,30 +87,34 @@ func main() {
 	var err error
 	ctx, cancelCtxFunc := context.WithCancel(context.Background())
 
-	wrappedBaseCfg, err := config.PrepareBaseConfig(ctx, ReleaseTag,
+	cfgErrFmtSvc := commonErrFmt.NewErrorFormatter()
+	wrappedBaseCfg, err := config.PrepareBaseConfig(ctx, cfgErrFmtSvc,
+		ReleaseTag,
 		CommitID, ShortCommitID,
 		BuildNumber, BuildDateTS)
 	if err != nil {
 		log.Fatal(err.Error(), err)
 	}
 
-	loggerSvc, err := commonLogger.NewService(wrappedBaseCfg)
+	loggerBuilderSvc, err := commonLogger.NewService(wrappedBaseCfg,
+		commonErrFmt.NewErrorBasicFormatter())
 	if err != nil {
 		log.Fatal(err.Error(), err)
 	}
-	loggerEntry := loggerSvc.NewLoggerEntry("main").
+	loggerEntry := loggerBuilderSvc.NewZapNamedLoggerEntry("main").
 		With(zap.String(app.BlockChainNameTag, wrappedBaseCfg.GetNetworkName()))
 
-	appCfg, vaultSvc, err := config.PrepareAppCfg(ctx, wrappedBaseCfg,
-		zap.NewStdLog(loggerEntry))
+	appCfg, vaultSvc, err := config.PrepareAppCfg(ctx, cfgErrFmtSvc, wrappedBaseCfg,
+		loggerBuilderSvc)
 	if err != nil {
 		log.Fatal(err.Error(), err)
 	}
 
-	transitSvc := commonVault.NewEncryptService(vaultSvc, appCfg.GetVaultCommonTransit())
-	encryptorSvc := commonVault.NewEncryptService(vaultSvc, appCfg.GetVaultCommonTransit())
+	transitSvc := commonVault.NewEncryptService(cfgErrFmtSvc, vaultSvc, appCfg.GetVaultCommonTransit())
+	encryptorSvc := commonVault.NewEncryptService(cfgErrFmtSvc, vaultSvc, appCfg.GetVaultCommonTransit())
 
-	pluginWrapper := plugin.NewPlugin(appCfg.GetHdWalletPluginPath(),
+	pluginWrapper := plugin.NewPlugin(commonErrFmt.NewErrorBasicFormatter(),
+		appCfg.GetHdWalletPluginPath(),
 		appCfg.GetHdWalletChainID(), appCfg.GetHdWalletCoinType())
 	err = pluginWrapper.Init(ctx)
 	if err != nil {
@@ -129,7 +134,9 @@ func main() {
 		pluginWrapper.GetMakeWalletCallback(), encryptorSvc)
 	walletsPoolSvc.Run()
 
-	profiler := commonProfiler.NewHTTPServer(loggerEntry, appCfg.ProfilerConfig)
+	profiler := commonProfiler.NewHTTPServer(loggerBuilderSvc,
+		commonErrFmt.NewScopedErrorFormatter("profiler"),
+		appCfg.ProfilerConfig)
 
 	apiHandlers := grpc.NewHandlers(loggerEntry,
 		pluginWrapper.GetMnemonicGeneratorFunc(),
@@ -154,7 +161,9 @@ func main() {
 	loggerEntry.Info("profiler successfully initiated")
 
 	// TODO: add healthcheck flow
-	commonHealthcheck.NewHTTPHealthChecker(loggerEntry, appCfg)
+	commonHealthcheck.NewHTTPHealthChecker(loggerBuilderSvc,
+		commonErrFmt.NewScopedErrorFormatter("lib-healthcheck"),
+		appCfg)
 	//checker.AddStartupProbeUnit(vaultSvc)
 	//checker.AddStartupProbeUnit(redisConn)
 	//checker.AddStartupProbeUnit(pgConn)
