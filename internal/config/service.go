@@ -3,7 +3,7 @@
  *
  * MIT NON-AI License
  *
- * Copyright (c) 2022-2024 Aleksei Kotelnikov(gudron2s@gmail.com)
+ * Copyright (c) 2022-2025 Aleksei Kotelnikov(gudron2s@gmail.com)
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of the software and associated documentation files (the "Software"),
  * to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense,
@@ -36,7 +36,6 @@ import (
 	"context"
 	"fmt"
 	commonLogger "github.com/crypto-bundle/bc-wallet-common-lib-logger/pkg/logger"
-	"log"
 	"os"
 
 	commonConfig "github.com/crypto-bundle/bc-wallet-common-lib-config/pkg/config"
@@ -45,9 +44,10 @@ import (
 )
 
 func PrepareLogger(ctx context.Context,
+	errFmtSvc errorFormatterService,
 	baseCfgSrv baseConfigService,
 ) (*commonLogger.LoggerConfig, error) {
-	cfgPreparerSrv := commonConfig.NewConfigManager()
+	cfgPreparerSrv := commonConfig.NewConfigManager(errFmtSvc)
 	loggerCfg := &commonLogger.LoggerConfig{}
 
 	err := cfgPreparerSrv.PrepareTo(loggerCfg).With(baseCfgSrv).Do(ctx)
@@ -59,10 +59,11 @@ func PrepareLogger(ctx context.Context,
 }
 
 func PrepareVault(ctx context.Context,
+	errFmtSvc errorFormatterService,
 	baseCfgSrv baseConfigService,
-	stdLogger *log.Logger,
+	loggerBuilderSvc loggerFactoryService,
 ) (*commonVault.Service, error) {
-	cfgPreparerSrv := commonConfig.NewConfigManager()
+	cfgPreparerSrv := commonConfig.NewConfigManager(errFmtSvc)
 	vaultCfg := &VaultWrappedConfig{
 		BaseConfig: &commonVault.BaseConfig{},
 		AuthConfig: &commonVaultTokenClient.AuthConfig{},
@@ -72,33 +73,34 @@ func PrepareVault(ctx context.Context,
 		return nil, err
 	}
 
-	vaultClientSrv, err := commonVaultTokenClient.NewClient(ctx, vaultCfg)
+	vaultClientSrv, err := commonVaultTokenClient.NewClient(ctx, errFmtSvc, vaultCfg)
 	if err != nil {
 		return nil, err
 	}
 
-	vaultSvc, err := commonVault.NewService(stdLogger, vaultCfg, vaultClientSrv)
+	vaultSrv, err := commonVault.NewService(loggerBuilderSvc, errFmtSvc, vaultCfg, vaultClientSrv)
 	if err != nil {
 		return nil, err
 	}
 
-	_, err = vaultSvc.Login(ctx)
+	_, err = vaultSrv.Login(ctx)
 	if err != nil {
 		return nil, err
 	}
 
-	return vaultSvc, nil
+	return vaultSrv, nil
 }
 
 func PrepareAppCfg(ctx context.Context,
+	errFmtSvc errorFormatterService,
 	wrappedBaseCfgSvc *BaseConfigWrapper,
-	stdLogger *log.Logger,
+	loggerBuilderSvc loggerFactoryService,
 ) (*HdWalletConfig, *commonVault.Service, error) {
 	baseCfg, loggerCfg, envProcCfg := wrappedBaseCfgSvc.BaseConfig,
 		wrappedBaseCfgSvc.LoggerConfig,
 		wrappedBaseCfgSvc.ProcessionEnvironmentConfig
 
-	vaultSecretSvc, err := PrepareVault(ctx, baseCfg, stdLogger)
+	vaultSecretSvc, err := PrepareVault(ctx, errFmtSvc, baseCfg, loggerBuilderSvc)
 	if err != nil {
 		return nil, nil, err
 	}
@@ -108,7 +110,7 @@ func PrepareAppCfg(ctx context.Context,
 		return nil, nil, err
 	}
 
-	appCfgPreparerSrv := commonConfig.NewConfigManager()
+	appCfgPreparerSrv := commonConfig.NewConfigManager(errFmtSvc)
 	wrappedConfig := &HdWalletConfig{}
 	err = appCfgPreparerSrv.PrepareTo(wrappedConfig).With(baseCfg,
 		loggerCfg, envProcCfg, vaultSecretSvc).Do(ctx)
@@ -124,6 +126,7 @@ func PrepareAppCfg(ctx context.Context,
 }
 
 func PrepareBaseConfig(ctx context.Context,
+	errFmtSvc errorFormatterService,
 	releaseTag,
 	commitID,
 	shortCommitID,
@@ -132,7 +135,7 @@ func PrepareBaseConfig(ctx context.Context,
 ) (*BaseConfigWrapper, error) {
 	appName := fmt.Sprintf(ApplicationManagerNameTpl, os.Getenv(ProcessingNetworkEnvName))
 
-	flagManagerSvc, err := commonConfig.NewLdFlagsManager(releaseTag,
+	flagManagerSvc, err := commonConfig.NewLdFlagsManager(errFmtSvc, releaseTag,
 		commitID, shortCommitID,
 		buildNumber, buildDateTS)
 	if err != nil {
@@ -144,20 +147,20 @@ func PrepareBaseConfig(ctx context.Context,
 		return nil, err
 	}
 
-	baseCfgPreparerSvc := commonConfig.NewConfigManager()
+	baseCfgPreparerSvc := commonConfig.NewConfigManager(errFmtSvc)
 	baseCfg := commonConfig.NewBaseConfig(appName)
 	err = baseCfgPreparerSvc.PrepareTo(baseCfg).With(flagManagerSvc).Do(ctx)
 	if err != nil {
 		return nil, err
 	}
 
-	loggerConfig, err := PrepareLogger(ctx, baseCfg)
+	loggerConfig, err := PrepareLogger(ctx, errFmtSvc, baseCfg)
 	if err != nil {
 		return nil, err
 	}
 
 	procEnvConfig := &ProcessionEnvironmentConfig{}
-	procEnvCfgPreparerSvc := commonConfig.NewConfigManager()
+	procEnvCfgPreparerSvc := commonConfig.NewConfigManager(errFmtSvc)
 	err = procEnvCfgPreparerSvc.PrepareTo(procEnvConfig).With(baseCfg).Do(ctx)
 	if err != nil {
 		return nil, err
