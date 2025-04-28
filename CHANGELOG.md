@@ -1,5 +1,10 @@
 # Change Log
 
+## [v0.0.35] 27.04.2025
+* Bump dependencies versions:
+  * hdwallet-controller v0.0.35
+  * lib-vault v0.0.22
+
 ## [v0.0.34] 27.04.2025
 ### Changed
 * Changed common-libs versions. Fixed some vulnerabilities issues.
