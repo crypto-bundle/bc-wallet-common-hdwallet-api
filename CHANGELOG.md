@@ -1,5 +1,10 @@
 # Change Log
 
+## [v0.0.36] 30.04.2025
+* Bump dependencies versions:
+  * hdwallet-controller v0.0.35
+  * lib-config v0.0.9
+
 ## [v0.0.35] 27.04.2025
 * Bump dependencies versions:
   * hdwallet-controller v0.0.35

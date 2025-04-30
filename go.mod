@@ -4,7 +4,7 @@ go 1.23.0
 
 require (
 	github.com/crypto-bundle/bc-wallet-common-hdwallet-controller v0.0.35
-	github.com/crypto-bundle/bc-wallet-common-lib-config v0.0.8
+	github.com/crypto-bundle/bc-wallet-common-lib-config v0.0.9
 	github.com/crypto-bundle/bc-wallet-common-lib-errors v0.0.10
 	github.com/crypto-bundle/bc-wallet-common-lib-healthcheck v0.0.9
 	github.com/crypto-bundle/bc-wallet-common-lib-logger v0.0.12
