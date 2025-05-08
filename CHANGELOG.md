@@ -1,11 +1,19 @@
 # Change Log
 
-## [v0.0.36] 30.04.2025
+## [v0.0.37] 30.04.2025
+### Changed
 * Bump dependencies versions:
-  * hdwallet-controller v0.0.35
+  * hdwallet-controller v0.0.37
+  * Dockerfile parent image - `golang:1.23-bookworm` as build-layer image
+
+## [v0.0.36] 30.04.2025
+### Changed
+* Bump dependencies versions:
+  * hdwallet-controller v0.0.36
   * lib-config v0.0.9
 
 ## [v0.0.35] 27.04.2025
+### Changed
 * Bump dependencies versions:
   * hdwallet-controller v0.0.35
   * lib-vault v0.0.22

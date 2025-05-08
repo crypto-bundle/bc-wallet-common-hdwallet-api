@@ -1,7 +1,7 @@
 github.com/cenkalti/backoff/v3 v3.2.2 h1:cfUAAO3yvKMYKPrvhDuHSwQnhZNk/RMHKdZqKTxfm6M=
 github.com/cenkalti/backoff/v3 v3.2.2/go.mod h1:cIeZDE3IrqwwJl6VUwCN6trj1oXrTS4rc0ij+ULvLYs=
-github.com/crypto-bundle/bc-wallet-common-hdwallet-controller v0.0.35 h1:HstadACMF49Mhei5QlNdDHH8LtIX3pO7QPhRoRuCkog=
-github.com/crypto-bundle/bc-wallet-common-hdwallet-controller v0.0.35/go.mod h1:GM9/Zg7g+JEGgwzXBL2IhmLujJ1ejX8r7MDH35WocTk=
+github.com/crypto-bundle/bc-wallet-common-hdwallet-controller v0.0.37 h1:UDhLLCVW7Tp908aEDe+faUwl0D4/igsDBZB7i4TJ8LY=
+github.com/crypto-bundle/bc-wallet-common-hdwallet-controller v0.0.37/go.mod h1:3i10T2sCa7ov1e8o117g3O0rti/AzKCrggpiFIxJ3jA=
 github.com/crypto-bundle/bc-wallet-common-lib-config v0.0.9 h1:FN0UQ/AtI7nK1t/w/rv7AXn9b24PBH0fFPgffjErDEU=
 github.com/crypto-bundle/bc-wallet-common-lib-config v0.0.9/go.mod h1:VIRdXW2HfW/sreGOApWVzwt8Zr6gMfRnbIGx/sj+J58=
 github.com/crypto-bundle/bc-wallet-common-lib-errors v0.0.10 h1:uJOr+PPioQZV9pJAWHoo/WEkAYHr8/qliJOnkLCsj+8=
