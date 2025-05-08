@@ -1,4 +1,4 @@
-FROM golang:1.22.2-bookworm AS gobuild
+FROM golang:1.23-bookworm AS gobuild
 
 ENV GO111MODULE on
 ENV GOSUMDB off
@@ -6,6 +6,7 @@ ENV GOSUMDB off
 ENV GOPRIVATE $GOPRIVATE,github.com/crypto-bundle
 
 RUN set -eux; \
+    apt-get clean; \
 	apt-get update; \
 	apt-get install -y --no-install-recommends \
 		git \
@@ -13,6 +14,7 @@ RUN set -eux; \
         build-essential \
 	; \
 	rm -rf /var/lib/apt/lists/* && \
+    apt-get clean; \
     mkdir -p -m 0700 ~/.ssh && \
     ssh-keyscan github.com >> ~/.ssh/known_hosts && \
     git config --global url."git@github.com".insteadOf "https://github.com/"
